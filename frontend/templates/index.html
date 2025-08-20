@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}StelleWorld - Boutique en ligne interactive{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                Bienvenue chez <span class="text-yellow-300">StelleWorld</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                Votre boutique en ligne moderne avec chat temps réel, abonnements flexibles et services personnalisés
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="/products" 
+                   class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center">
+                    <i class="fas fa-shopping-bag mr-2"></i>
+                    Découvrir nos produits
+                </a>
+                <a href="/appointments" 
+                   class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors inline-flex items-center">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    Réserver un RDV
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fonctionnalités principales -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Pourquoi choisir StelleWorld ?
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Une expérience d'achat révolutionnaire qui combine e-commerce moderne, services personnalisés et support temps réel
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Chat temps réel -->
+            <div class="text-center p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-comments text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Chat Temps Réel</h3>
+                <p class="text-gray-600">
+                    Posez vos questions directement et obtenez des réponses instantanées de notre équipe support
+                </p>
+            </div>
+            
+            <!-- Abonnements flexibles -->
+            <div class="text-center p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-sync-alt text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Abonnements Flexibles</h3>
+                <p class="text-gray-600">
+                    Profitez de nos formules d'abonnement adaptées à vos besoins avec gestion facile
+                </p>
+            </div>
+            
+            <!-- Services sur mesure -->
+            <div class="text-center p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-cog text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Services sur Mesure</h3>
+                <p class="text-gray-600">
+                    Réservez facilement vos rendez-vous pour des consultations et services personnalisés
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Produits en vedette -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Produits en Vedette
+            </h2>
+            <p class="text-xl text-gray-600">
+                Découvrez notre sélection de produits les plus populaires
+            </p>
+        </div>
+        
+        <!-- Chargement des produits via HTMX -->
+        <div hx-get="/api/products/featured" 
+             hx-trigger="load" 
+             hx-target="#featured-products"
+             class="min-h-48 flex items-center justify-center">
+            <div class="text-center">
+                <i class="fas fa-spinner fa-spin text-3xl text-blue-600 mb-4"></i>
+                <p class="text-gray-600">Chargement des produits...</p>
+            </div>
+        </div>
+        
+        <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Les produits seront chargés ici -->
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/products" 
+               class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors inline-flex items-center">
+                <i class="fas fa-arrow-right mr-2"></i>
+                Voir tous les produits
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Best Sellers -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-fire text-orange-500 mr-3"></i>
+                Meilleures Ventes
+            </h2>
+            <p class="text-xl text-gray-600">
+                Les produits préférés de nos clients
+            </p>
+        </div>
+        
+        <!-- Chargement des best-sellers via HTMX -->
+        <div hx-get="/api/products/best-sellers" 
+             hx-trigger="load" 
+             hx-target="#best-sellers"
+             class="min-h-48 flex items-center justify-center">
+            <div class="text-center">
+                <i class="fas fa-spinner fa-spin text-3xl text-orange-500 mb-4"></i>
+                <p class="text-gray-600">Chargement des meilleures ventes...</p>
+            </div>
+        </div>
+        
+        <div id="best-sellers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            <!-- Les best-sellers seront chargés ici -->
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">
+            Prêt à commencer ?
+        </h2>
+        <p class="text-xl mb-8 text-purple-100">
+            Rejoignez des milliers de clients satisfaits et découvrez une nouvelle façon de faire du shopping
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="/register" 
+               class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center">
+                <i class="fas fa-user-plus mr-2"></i>
+                Créer un compte
+            </a>
+            <button onclick="toggleChat()"
+                    class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors inline-flex items-center">
+                <i class="fas fa-comments mr-2"></i>
+                Discuter avec nous
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques -->
+<section class="py-16 bg-gray-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="text-3xl font-bold text-blue-400 mb-2">1000+</div>
+                <div class="text-gray-300">Clients satisfaits</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-green-400 mb-2">500+</div>
+                <div class="text-gray-300">Produits disponibles</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-purple-400 mb-2">24/7</div>
+                <div class="text-gray-300">Support chat</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-yellow-400 mb-2">98%</div>
+                <div class="text-gray-300">Satisfaction client</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Template pour afficher un produit
+function renderProduct(product) {
+    return `
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="aspect-w-4 aspect-h-3">
+                <img src="${product.main_image_url || '/static/images/placeholder.jpg'}" 
+                     alt="${product.name}" 
+                     class="w-full h-48 object-cover">
+            </div>
+            <div class="p-4">
+                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${product.name}</h3>
+                <p class="text-gray-600 text-sm mb-3 line-clamp-2">${product.short_description || ''}</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg font-bold text-blue-600">${product.price}€</span>
+                        ${product.compare_at_price ? `<span class="text-sm text-gray-500 line-through">${product.compare_at_price}€</span>` : ''}
+                    </div>
+                    ${product.is_in_stock ? 
+                        `<button onclick="addToCart(${product.id})" 
+                                class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-cart-plus mr-1"></i>Ajouter
+                        </button>` : 
+                        `<span class="text-red-500 text-sm font-medium">Rupture</span>`
+                    }
+                </div>
+                ${product.sales_count ? `<div class="mt-2 text-xs text-gray-500">${product.sales_count} vendus</div>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Gestionnaire pour les produits en vedette
+document.addEventListener('htmx:afterRequest', function(evt) {
+    if (evt.detail.target.id === 'featured-products') {
+        const response = JSON.parse(evt.detail.xhr.responseText);
+        if (response.featured_products) {
+            evt.detail.target.innerHTML = response.featured_products.map(renderProduct).join('');
+        }
+    } else if (evt.detail.target.id === 'best-sellers') {
+        const response = JSON.parse(evt.detail.xhr.responseText);
+        if (response.best_sellers) {
+            evt.detail.target.innerHTML = response.best_sellers.map(product => {
+                return `
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <div class="relative">
+                            <img src="${product.main_image_url || '/static/images/placeholder.jpg'}" 
+                                 alt="${product.name}" 
+                                 class="w-full h-40 object-cover">
+                            <div class="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                                #${response.best_sellers.indexOf(product) + 1}
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <h3 class="font-semibold text-gray-900 mb-1 text-sm line-clamp-1">${product.name}</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-blue-600 font-bold">${product.price}€</span>
+                                <span class="text-xs text-gray-500">${product.sales_count} vendus</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+});
+</script>
+{% endblock %}

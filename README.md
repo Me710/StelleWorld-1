@@ -181,7 +181,7 @@ StelleWorld/
 
 1. **Cloner le projet**
 ```bash
-git clone https://github.com/votre-username/StelleWorld.git
+git clone https://github.com/Me710/StelleWorld.git
 cd StelleWorld
 ```
 

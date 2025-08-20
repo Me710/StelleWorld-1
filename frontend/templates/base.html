@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StelleWorld - Boutique en ligne interactive{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+    
+    <!-- Meta SEO -->
+    <meta name="description" content="{% block description %}StelleWorld - Votre boutique en ligne moderne avec chat temps réel, abonnements et services sur mesure{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}e-commerce, boutique en ligne, chat temps réel, abonnements, services{% endblock %}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% block og_title %}StelleWorld{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Boutique en ligne interactive avec une expérience client exceptionnelle{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">SW</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">StelleWorld</span>
+                    </a>
+                </div>
+                
+                <!-- Menu principal -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+                        Accueil
+                    </a>
+                    <a href="/products" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+                        Produits
+                    </a>
+                    <a href="/appointments" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+                        Rendez-vous
+                    </a>
+                    <a href="/subscriptions" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">
+                        Abonnements
+                    </a>
+                </div>
+                
+                <!-- Actions utilisateur -->
+                <div class="flex items-center space-x-4">
+                    <!-- Panier -->
+                    <a href="/cart" class="relative p-2 text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Chat -->
+                    <button onclick="toggleChat()" class="relative p-2 text-gray-600 hover:text-blue-600 transition">
+                        <i class="fas fa-comments text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-green-500 w-3 h-3 rounded-full hidden" id="chat-indicator"></span>
+                    </button>
+                    
+                    <!-- Profil utilisateur -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition">
+                            <i class="fas fa-user-circle text-xl"></i>
+                            <span class="hidden md:block text-sm font-medium">Mon compte</span>
+                        </button>
+                        
+                        <!-- Dropdown menu -->
+                        <div x-show="open" @click.away="open = false" 
+                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5"
+                             style="display: none;">
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mon profil</a>
+                            <a href="/orders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes commandes</a>
+                            <a href="/subscriptions" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes abonnements</a>
+                            <div class="border-t border-gray-100"></div>
+                            <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Déconnexion</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Menu mobile -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-gray-600 hover:text-blue-600" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Menu mobile -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Accueil</a>
+                <a href="/products" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Produits</a>
+                <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Rendez-vous</a>
+                <a href="/subscriptions" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Abonnements</a>
+                <div class="border-t border-gray-200 pt-2">
+                    <a href="/profile" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Mon profil</a>
+                    <a href="/cart" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Mon panier</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages flash -->
+    <div id="flash-messages" class="fixed top-20 right-4 z-50 space-y-2">
+        <!-- Les messages seront ajoutés ici via JavaScript -->
+    </div>
+    
+    <!-- Contenu principal -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- À propos -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">StelleWorld</h3>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Votre boutique en ligne moderne avec une expérience client exceptionnelle. 
+                        Chat temps réel, abonnements flexibles et services personnalisés.
+                    </p>
+                </div>
+                
+                <!-- Liens rapides -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/products" class="text-gray-300 hover:text-white transition">Produits</a></li>
+                        <li><a href="/appointments" class="text-gray-300 hover:text-white transition">Rendez-vous</a></li>
+                        <li><a href="/subscriptions" class="text-gray-300 hover:text-white transition">Abonnements</a></li>
+                        <li><a href="/about" class="text-gray-300 hover:text-white transition">À propos</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/contact" class="text-gray-300 hover:text-white transition">Contact</a></li>
+                        <li><a href="/faq" class="text-gray-300 hover:text-white transition">FAQ</a></li>
+                        <li><a href="/shipping" class="text-gray-300 hover:text-white transition">Livraison</a></li>
+                        <li><a href="/returns" class="text-gray-300 hover:text-white transition">Retours</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <div class="space-y-2 text-sm text-gray-300">
+                        <p><i class="fas fa-envelope mr-2"></i> support@stelleworld.com</p>
+                        <p><i class="fas fa-phone mr-2"></i> +33 1 23 45 67 89</p>
+                        <p><i class="fas fa-map-marker-alt mr-2"></i> Paris, France</p>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="#" class="text-gray-300 hover:text-white transition"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-gray-300 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-gray-300 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2024 StelleWorld. Tous droits réservés. | 
+                   <a href="/privacy" class="hover:text-white transition">Confidentialité</a> | 
+                   <a href="/terms" class="hover:text-white transition">CGU</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Chat Widget -->
+    <div id="chat-widget" class="fixed bottom-4 right-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-80 h-96 flex flex-col">
+            <!-- En-tête du chat -->
+            <div class="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <h3 class="font-semibold">Support Chat</h3>
+                <button onclick="toggleChat()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Messages -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-2">
+                <!-- Les messages apparaîtront ici -->
+            </div>
+            
+            <!-- Zone de saisie -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex space-x-2">
+                    <input type="text" id="chat-input" 
+                           placeholder="Tapez votre message..." 
+                           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="sendChatMessage()" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alpine.js pour les interactions -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <!-- Scripts custom -->
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/cart.js"></script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
