@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+description: Guide d'architecture générale de StelleWorld
+---
+
+# Architecture StelleWorld
+
+StelleWorld est une boutique en ligne interactive avec les composants suivants :
+
+## Structure générale
+- **Backend** : [backend/app/main.py](mdc:backend/app/main.py) - Point d'entrée FastAPI
+- **Configuration** : [backend/app/core/config.py](mdc:backend/app/core/config.py) - Paramètres centralisés
+- **Base de données** : [backend/app/core/database.py](mdc:backend/app/core/database.py) - Connexion SQLAlchemy
+- **Frontend** : Templates Jinja2 dans [frontend/templates/](mdc:frontend/templates/) avec assets statiques
+
+## Modèles de données
+Les modèles SQLAlchemy sont dans [backend/app/models/](mdc:backend/app/models/) :
+- [user.py](mdc:backend/app/models/user.py) - Utilisateurs et authentification
+- [product.py](mdc:backend/app/models/product.py) - Catalogue produits
+- [order.py](mdc:backend/app/models/order.py) - Commandes et paiements
+- [subscription.py](mdc:backend/app/models/subscription.py) - Abonnements récurrents
+- [appointment.py](mdc:backend/app/models/appointment.py) - Réservations de services
+- [chat.py](mdc:backend/app/models/chat.py) - Messages temps réel
+
+## API Routes
+Les endpoints sont organisés dans [backend/app/api/](mdc:backend/app/api/) par domaine fonctionnel.
+
+## Gestion des dépendances
+- **Python** : [backend/requirements.txt](mdc:backend/requirements.txt)
+- **Docker** : [docker-compose.yml](mdc:docker-compose.yml) pour développement
+- **Production** : [docker-compose.prod.yml](mdc:docker-compose.prod.yml)
+
+## Déploiement
+Utiliser le [Makefile](mdc:Makefile) pour les commandes courantes :
+- `make dev` : Lancement développement
+- `make prod` : Déploiement production
+- `make migrate` : Migrations base de données
+
+## Services externes
+- **Stripe** : Paiements et abonnements
+- **Telegram** : Notifications commerçant
+- **Redis** : Cache et Celery
+- **PostgreSQL** : Base de données principale

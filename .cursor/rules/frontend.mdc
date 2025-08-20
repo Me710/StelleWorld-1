@@ -1,0 +1,153 @@
+---
+globs: frontend/**/*.html,frontend/**/*.css,frontend/**/*.js
+description: Règles pour le développement frontend
+---
+
+# Développement Frontend
+
+## Architecture Frontend
+- **Templates** : [frontend/templates/](mdc:frontend/templates/) - Jinja2 avec héritage de [base.html](mdc:frontend/templates/base.html)
+- **CSS** : [frontend/static/css/main.css](mdc:frontend/static/css/main.css) - TailwindCSS
+- **JavaScript** : [frontend/static/js/](mdc:frontend/static/js/) - JavaScript vanilla + HTMX
+
+## Structure des templates
+```html
+<!-- Hériter de base.html -->
+{% extends "base.html" %}
+
+{% block title %}Titre de la page{% endblock %}
+
+{% block extra_head %}
+<!-- CSS/JS spécifiques à la page -->
+{% endblock %}
+
+{% block content %}
+<!-- Contenu principal -->
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Scripts spécifiques à la page -->
+{% endblock %}
+```
+
+## Classes CSS TailwindCSS
+Utiliser les classes utilitaires Tailwind pour le styling :
+```html
+<!-- Boutons -->
+<button class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors">
+    Bouton primaire
+</button>
+
+<!-- Cards -->
+<div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+    Contenu de la carte
+</div>
+
+<!-- Formulaires -->
+<input class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+```
+
+## JavaScript et HTMX
+Utiliser HTMX pour les interactions dynamiques :
+```html
+<!-- Chargement de contenu -->
+<div hx-get="/api/products" hx-trigger="load" hx-target="#products-list">
+    <div class="loading">Chargement...</div>
+</div>
+
+<!-- Formulaires AJAX -->
+<form hx-post="/api/orders" hx-target="#result" hx-swap="innerHTML">
+    <input name="product_id" type="hidden" value="123">
+    <button type="submit">Ajouter au panier</button>
+</form>
+```
+
+## JavaScript vanilla
+Pour les fonctionnalités complexes, utiliser JavaScript modulaire :
+```javascript
+// frontend/static/js/cart.js
+class ShoppingCart {
+    constructor() {
+        this.items = JSON.parse(localStorage.getItem('cart')) || [];
+        this.init();
+    }
+    
+    init() {
+        this.updateDisplay();
+        this.bindEvents();
+    }
+    
+    addItem(productId, quantity = 1) {
+        // Logique d'ajout
+        this.saveCart();
+        this.updateDisplay();
+    }
+}
+
+// Initialiser au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    window.cart = new ShoppingCart();
+});
+```
+
+## WebSocket pour le chat
+Le chat temps réel utilise WebSocket :
+```javascript
+// frontend/static/js/chat.js
+class ChatHandler {
+    constructor() {
+        this.ws = new WebSocket('ws://localhost:8000/ws/chat');
+        this.setupEventListeners();
+    }
+    
+    setupEventListeners() {
+        this.ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            this.displayMessage(message);
+        };
+    }
+}
+```
+
+## Composants réutilisables
+Créer des composants HTML réutilisables :
+```html
+<!-- components/product-card.html -->
+<div class="product-card bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-lg">
+    <div class="p-4">
+        <h3 class="font-semibold text-lg">{{ product.name }}</h3>
+        <p class="text-gray-600 mt-2">{{ product.description }}</p>
+        <div class="flex justify-between items-center mt-4">
+            <span class="text-xl font-bold text-green-600">{{ product.price }}€</span>
+            <button hx-post="/api/cart/add" hx-vals='{"product_id": {{ product.id }}}' 
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Ajouter
+            </button>
+        </div>
+    </div>
+</div>
+```
+
+## Responsive Design
+Utiliser les classes responsive de Tailwind :
+```html
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Grille responsive pour les produits -->
+</div>
+```
+
+## Gestion des erreurs
+Afficher les messages d'erreur de manière cohérente :
+```html
+<div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <span class="error-text"></span>
+</div>
+```
+
+## Pages principales
+- [index.html](mdc:frontend/templates/index.html) : Page d'accueil
+- [products/catalog.html](mdc:frontend/templates/products/catalog.html) : Catalogue
+- [cart/cart.html](mdc:frontend/templates/cart/cart.html) : Panier
+- [cart/checkout.html](mdc:frontend/templates/cart/checkout.html) : Commande
+- [appointments/booking.html](mdc:frontend/templates/appointments/booking.html) : Réservations

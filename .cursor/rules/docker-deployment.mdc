@@ -1,0 +1,172 @@
+---
+globs: docker-compose*.yml,Dockerfile*,Makefile,nginx/**/*
+description: Règles pour Docker et déploiement
+---
+
+# Docker et Déploiement
+
+## Orchestration Docker
+- **Développement** : [docker-compose.yml](mdc:docker-compose.yml)
+- **Production** : [docker-compose.prod.yml](mdc:docker-compose.prod.yml)
+- **Makefile** : [Makefile](mdc:Makefile) pour les commandes courantes
+
+## Services Docker
+```yaml
+# Structure type d'un service
+services:
+  service_name:
+    build:
+      context: ./path
+      dockerfile: Dockerfile
+    container_name: stelleworld_service
+    environment:
+      - VAR_NAME=value
+    ports:
+      - "host_port:container_port"
+    volumes:
+      - ./local_path:/container_path
+    depends_on:
+      - dependency_service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:port/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+```
+
+## Commandes Makefile
+Utiliser le [Makefile](mdc:Makefile) pour standardiser les opérations :
+
+### Développement
+```bash
+make setup      # Installation complète
+make dev        # Lancer l'environnement de dev
+make build      # Construire les images
+make stop       # Arrêter les services
+make logs       # Voir les logs
+make shell      # Shell dans le backend
+```
+
+### Base de données
+```bash
+make migrate           # Appliquer les migrations
+make migrate-create    # Créer une migration
+make shell-db         # Shell PostgreSQL
+make backup-db        # Sauvegarder la DB
+make restore-db       # Restaurer la DB
+```
+
+### Tests et qualité
+```bash
+make test      # Lancer les tests
+make lint      # Vérifier le code
+make format    # Formatter le code
+```
+
+### Production
+```bash
+make prod            # Déploiement production
+make prod-deploy     # Déploiement complet
+make ssl-renew       # Renouveler SSL
+```
+
+## Configuration Nginx
+Le reverse proxy est configuré dans [nginx/nginx.conf](mdc:nginx/nginx.conf) :
+
+```nginx
+# Exemple de configuration
+upstream backend {
+    server backend:8000;
+}
+
+server {
+    listen 80;
+    server_name stelleworld.com;
+    
+    # Fichiers statiques
+    location /static/ {
+        alias /var/www/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    # API Backend
+    location /api/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+    
+    # WebSocket
+    location /ws/ {
+        proxy_pass http://backend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
+## Variables d'environnement
+Créer un fichier `.env` basé sur `.env.example` :
+
+```env
+# Base de données
+DATABASE_URL=postgresql://user:pass@db:5432/stelleworld
+
+# JWT
+SECRET_KEY=your-secret-key-change-in-production
+ALGORITHM=HS256
+
+# Stripe
+STRIPE_PUBLIC_KEY=pk_live_...
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Telegram
+TELEGRAM_BOT_TOKEN=bot_token
+TELEGRAM_CHAT_ID=chat_id
+
+# Redis
+REDIS_URL=redis://redis:6379/0
+```
+
+## Dockerfiles
+Chaque service a son Dockerfile :
+- [backend/Dockerfile](mdc:backend/Dockerfile) : FastAPI + Python
+- [worker/Dockerfile](mdc:worker/Dockerfile) : Celery worker
+- [nginx/Dockerfile](mdc:nginx/Dockerfile) : Nginx reverse proxy
+
+## Volumes persistants
+```yaml
+volumes:
+  postgres_data:    # Données PostgreSQL
+  redis_data:       # Cache Redis
+  uploads_data:     # Fichiers uploadés
+```
+
+## Health checks
+Tous les services doivent avoir des health checks :
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+```
+
+## Déploiement production
+1. Cloner le repo sur le serveur
+2. Configurer le fichier `.env`
+3. Lancer `make prod-deploy`
+4. Configurer SSL/TLS si nécessaire
+
+## Monitoring
+- Utiliser `make monitor` pour voir l'utilisation des ressources
+- Consulter les logs avec `make logs`
+- Vérifier la santé avec `make health`
+
+## Sauvegarde
+- Base de données : `make backup-db`
+- Fichiers uploadés : inclus dans `make backup-full`

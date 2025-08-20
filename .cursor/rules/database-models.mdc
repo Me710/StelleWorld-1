@@ -1,0 +1,108 @@
+---
+globs: backend/app/models/*.py,backend/alembic/**/*.py
+description: Règles pour les modèles SQLAlchemy et migrations Alembic
+---
+
+# Modèles de Base de Données
+
+## Structure des modèles SQLAlchemy
+Tous les modèles sont dans [backend/app/models/](mdc:backend/app/models/) et héritent de `Base` :
+
+```python
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from datetime import datetime
+
+Base = declarative_base()
+
+class BaseModel(Base):
+    __abstract__ = True
+    
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+```
+
+## Conventions de nommage
+- **Tables** : snake_case au pluriel (`users`, `products`, `order_items`)
+- **Colonnes** : snake_case (`first_name`, `is_active`)
+- **Relations** : snake_case au singulier pour one-to-one, pluriel pour one-to-many
+- **Index** : Ajouter `index=True` pour les clés étrangères et champs recherchés
+
+## Relations courantes
+```python
+# One-to-Many
+class User(BaseModel):
+    __tablename__ = "users"
+    orders = relationship("Order", back_populates="user")
+
+class Order(BaseModel):
+    __tablename__ = "orders"
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="orders")
+
+# Many-to-Many avec table d'association
+from sqlalchemy import Table
+order_products = Table(
+    'order_products', Base.metadata,
+    Column('order_id', Integer, ForeignKey('orders.id')),
+    Column('product_id', Integer, ForeignKey('products.id'))
+)
+```
+
+## Migrations Alembic
+Configuration dans [backend/alembic.ini](mdc:backend/alembic.ini) et [backend/alembic/env.py](mdc:backend/alembic/env.py).
+
+### Créer une migration
+```bash
+# Depuis le conteneur backend
+make migrate-create  # ou
+alembic revision --autogenerate -m "Description de la migration"
+```
+
+### Appliquer les migrations
+```bash
+make migrate  # ou
+alembic upgrade head
+```
+
+## Contraintes et validations
+```python
+from sqlalchemy import CheckConstraint
+
+class Product(BaseModel):
+    __tablename__ = "products"
+    
+    price = Column(Numeric(10, 2), CheckConstraint('price > 0'))
+    stock = Column(Integer, CheckConstraint('stock >= 0'))
+    status = Column(Enum(ProductStatus), default=ProductStatus.ACTIVE)
+```
+
+## Index et performance
+```python
+from sqlalchemy import Index
+
+class Order(BaseModel):
+    __tablename__ = "orders"
+    
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    status = Column(String, index=True)
+    created_at = Column(DateTime, index=True)
+    
+    # Index composé
+    __table_args__ = (
+        Index('idx_user_status', 'user_id', 'status'),
+    )
+```
+
+## Configuration de la base
+La connexion est configurée dans [backend/app/core/database.py](mdc:backend/app/core/database.py).
+
+## Modèles existants
+- [user.py](mdc:backend/app/models/user.py) : Utilisateurs et authentification
+- [product.py](mdc:backend/app/models/product.py) : Produits et catalogue
+- [order.py](mdc:backend/app/models/order.py) : Commandes et items
+- [subscription.py](mdc:backend/app/models/subscription.py) : Abonnements Stripe
+- [appointment.py](mdc:backend/app/models/appointment.py) : Réservations
+- [chat.py](mdc:backend/app/models/chat.py) : Messages et conversations

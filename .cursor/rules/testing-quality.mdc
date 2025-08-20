@@ -1,0 +1,226 @@
+---
+globs: backend/tests/**/*.py,*.py
+description: Règles pour les tests et la qualité du code
+---
+
+# Tests et Qualité du Code
+
+## Framework de tests
+Utiliser **pytest** pour tous les tests backend avec les plugins :
+- `pytest-asyncio` : Tests asynchrones
+- `httpx` : Tests des endpoints FastAPI
+- Configuration dans `pytest.ini` ou `pyproject.toml`
+
+## Structure des tests
+```
+backend/tests/
+├── __init__.py
+├── conftest.py              # Fixtures communes
+├── test_auth.py            # Tests authentification
+├── test_products.py        # Tests produits
+├── test_orders.py          # Tests commandes
+├── integration/            # Tests d'intégration
+│   ├── test_order_flow.py
+│   └── test_payment_flow.py
+└── fixtures/               # Données de test
+    ├── users.json
+    └── products.json
+```
+
+## Fixtures pytest
+Créer des fixtures réutilisables dans `conftest.py` :
+```python
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+from app.main import app
+from app.core.database import get_db, Base
+from app.core.config import settings
+
+@pytest.fixture
+def client():
+    """Client de test FastAPI"""
+    with TestClient(app) as test_client:
+        yield test_client
+
+@pytest.fixture
+def db_session():
+    """Session de base de données de test"""
+    # Créer une DB de test
+    pass
+
+@pytest.fixture
+def auth_headers(client):
+    """Headers d'authentification pour les tests"""
+    # Créer un utilisateur de test et retourner les headers
+    pass
+```
+
+## Tests d'API
+```python
+def test_create_product(client, auth_headers):
+    """Test de création d'un produit"""
+    product_data = {
+        "name": "Produit Test",
+        "description": "Description test",
+        "price": 29.99,
+        "stock": 100
+    }
+    
+    response = client.post(
+        "/api/products/",
+        json=product_data,
+        headers=auth_headers
+    )
+    
+    assert response.status_code == 201
+    assert response.json()["name"] == product_data["name"]
+
+def test_get_products_list(client):
+    """Test de récupération de la liste des produits"""
+    response = client.get("/api/products/")
+    
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+```
+
+## Tests des modèles
+```python
+def test_user_model(db_session):
+    """Test du modèle User"""
+    from app.models.user import User
+    from app.core.security import get_password_hash
+    
+    user = User(
+        email="test@example.com",
+        first_name="Test",
+        last_name="User",
+        hashed_password=get_password_hash("password123")
+    )
+    
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    
+    assert user.id is not None
+    assert user.email == "test@example.com"
+```
+
+## Tests d'intégration
+```python
+def test_complete_order_flow(client, auth_headers):
+    """Test complet du processus de commande"""
+    # 1. Créer un produit
+    # 2. L'ajouter au panier
+    # 3. Passer la commande
+    # 4. Vérifier le statut
+    pass
+```
+
+## Linting et formatage
+Utiliser les outils de qualité configurés dans [backend/requirements.txt](mdc:backend/requirements.txt) :
+
+### Black (formatage)
+```bash
+make format  # ou
+black backend/app/
+```
+
+### isort (imports)
+```bash
+isort backend/app/
+```
+
+### flake8 (linting)
+```bash
+make lint  # ou
+flake8 backend/app/
+```
+
+## Configuration .flake8
+```ini
+[flake8]
+max-line-length = 88
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    migrations/
+ignore = 
+    E203,  # whitespace before ':'
+    W503,  # line break before binary operator
+```
+
+## Coverage
+Utiliser `pytest-cov` pour mesurer la couverture :
+```bash
+pytest --cov=app --cov-report=html
+```
+
+## Tests WebSocket
+```python
+def test_chat_websocket():
+    """Test de connexion WebSocket"""
+    from fastapi.testclient import TestClient
+    
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws/chat") as websocket:
+            websocket.send_json({"message": "Hello"})
+            data = websocket.receive_json()
+            assert data["message"] == "Hello"
+```
+
+## Mocking
+Utiliser `unittest.mock` pour les services externes :
+```python
+from unittest.mock import patch, MagicMock
+
+@patch('app.services.stripe_service.stripe.PaymentIntent.create')
+def test_create_payment(mock_stripe, client):
+    """Test de création de paiement Stripe"""
+    mock_stripe.return_value = MagicMock(id="pi_test123")
+    
+    response = client.post("/api/payments/", json={
+        "amount": 2999,
+        "currency": "eur"
+    })
+    
+    assert response.status_code == 200
+    mock_stripe.assert_called_once()
+```
+
+## Tests de performance
+Pour les tests de charge, utiliser `locust` :
+```python
+from locust import HttpUser, task, between
+
+class StelleWorldUser(HttpUser):
+    wait_time = between(1, 3)
+    
+    @task
+    def get_products(self):
+        self.client.get("/api/products/")
+    
+    @task(3)  # 3x plus fréquent
+    def get_homepage(self):
+        self.client.get("/")
+```
+
+## CI/CD
+Intégrer les tests dans GitHub Actions ou GitLab CI :
+```yaml
+- name: Run tests
+  run: |
+    make test
+    make lint
+```
+
+## Commandes make
+```bash
+make test           # Lancer tous les tests
+make test-unit      # Tests unitaires uniquement
+make test-integration  # Tests d'intégration
+make lint           # Vérifications qualité
+make format         # Formatage automatique
+make coverage       # Coverage report
+```

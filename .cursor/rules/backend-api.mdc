@@ -1,0 +1,83 @@
+---
+globs: backend/app/api/*.py,backend/app/schemas/*.py
+description: Règles pour le développement des API FastAPI
+---
+
+# Développement API Backend
+
+## Structure des endpoints
+Chaque module API dans [backend/app/api/](mdc:backend/app/api/) doit suivre cette structure :
+
+```python
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.core.security import get_current_user
+
+router = APIRouter()
+
+@router.get("/")
+async def list_items(db: Session = Depends(get_db)):
+    """Liste les éléments avec pagination"""
+    pass
+
+@router.post("/")
+async def create_item(item: ItemCreate, db: Session = Depends(get_db)):
+    """Crée un nouvel élément"""
+    pass
+
+@router.get("/{item_id}")
+async def get_item(item_id: int, db: Session = Depends(get_db)):
+    """Récupère un élément par ID"""
+    pass
+```
+
+## Conventions de nommage
+- **Endpoints** : Utiliser des noms de ressources au pluriel (`/products`, `/orders`)
+- **Méthodes** : Verbes HTTP standards (GET, POST, PUT, DELETE)
+- **Paramètres** : snake_case pour les paramètres de fonction
+- **Responses** : Utiliser les schémas Pydantic appropriés
+
+## Gestion des erreurs
+```python
+from fastapi import HTTPException, status
+
+# Pour les ressources non trouvées
+raise HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Ressource non trouvée"
+)
+
+# Pour les erreurs de validation
+raise HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="Données invalides"
+)
+```
+
+## Dépendances communes
+- `get_db()` : Session base de données
+- `get_current_user()` : Utilisateur authentifié
+- `get_current_admin()` : Utilisateur admin
+
+## Schémas Pydantic
+Créer des schémas dans [backend/app/schemas/](mdc:backend/app/schemas/) :
+- `BaseModel` pour les schémas de base
+- `Create` pour la création
+- `Update` pour les modifications
+- `Response` pour les réponses API
+
+## Authentification
+Utiliser les décorateurs de sécurité de [backend/app/core/security.py](mdc:backend/app/core/security.py)
+
+## Pagination
+Implémenter la pagination pour les listes :
+```python
+from fastapi import Query
+
+async def list_items(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100)
+):
+    pass
+```

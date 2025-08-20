@@ -1,0 +1,179 @@
+---
+globs: backend/app/services/*.py,backend/app/api/*.py
+description: Règles pour la logique métier spécifique à StelleWorld
+---
+
+# Logique Métier StelleWorld
+
+## Domaines fonctionnels
+
+### 🛍️ E-commerce & Catalogue
+- **Produits** : Gestion du stock, variations (taille, couleur), catégories
+- **Panier** : Persistance locale et serveur, calculs de prix
+- **Commandes** : Workflow complet avec statuts (en attente, payée, expédiée, livrée)
+- **Inventaire** : Réservation temporaire lors de l'ajout au panier
+
+### 💳 Paiements & Abonnements
+- **Stripe Integration** : Paiements uniques et récurrents
+- **Webhooks** : Synchronisation automatique des statuts Stripe
+- **Abonnements** : Formules mensuelles/annuelles avec gestion du cycle de vie
+- **Refunds** : Remboursements partiels ou complets
+
+### 📅 Services & Rendez-vous
+- **Créneaux** : Disponibilités configurables par service
+- **Réservations** : Confirmation automatique ou manuelle
+- **Rappels** : Notifications avant RDV (email/Telegram)
+- **Gestion des annulations** : Politique d'annulation flexible
+
+### 💬 Chat & Support
+- **WebSocket** : Communication temps réel client-commerçant
+- **Historique** : Sauvegarde des conversations
+- **Notifications** : Alerts Telegram pour nouveaux messages
+- **Statuts** : En ligne, absent, occupé
+
+### 📊 Analytics & Recommandations
+- **Best-sellers** : Calcul automatique basé sur les ventes
+- **Produits liés** : "Souvent achetés ensemble"
+- **Rapports** : Ventes par période, produits populaires
+- **KPIs** : Taux de conversion, panier moyen
+
+## Services métier
+
+### ProductService
+```python
+class ProductService:
+    @staticmethod
+    def check_stock(product_id: int, quantity: int) -> bool:
+        """Vérifier la disponibilité du stock"""
+        pass
+    
+    @staticmethod
+    def reserve_stock(product_id: int, quantity: int, order_id: int):
+        """Réserver du stock pour une commande"""
+        pass
+    
+    @staticmethod
+    def get_related_products(product_id: int, limit: int = 4):
+        """Obtenir les produits souvent achetés ensemble"""
+        pass
+```
+
+### OrderService
+```python
+class OrderService:
+    @staticmethod
+    def create_order(user_id: int, cart_items: List[CartItem]) -> Order:
+        """Créer une commande à partir du panier"""
+        # 1. Vérifier le stock
+        # 2. Calculer le total
+        # 3. Réserver les produits
+        # 4. Créer la commande
+        pass
+    
+    @staticmethod
+    def process_payment(order_id: int, payment_method: str):
+        """Traiter le paiement d'une commande"""
+        pass
+```
+
+### AppointmentService
+```python
+class AppointmentService:
+    @staticmethod
+    def get_available_slots(service_id: int, date: date) -> List[datetime]:
+        """Obtenir les créneaux disponibles"""
+        pass
+    
+    @staticmethod
+    def book_appointment(user_id: int, service_id: int, slot: datetime):
+        """Réserver un créneau"""
+        pass
+```
+
+## Règles métier importantes
+
+### Stock et Inventory
+- Le stock est réservé pendant 15 minutes lors de l'ajout au panier
+- Les réservations expirent automatiquement
+- Notifications automatiques quand stock < seuil minimum
+
+### Pricing
+- Prix HT/TTC configurables par produit
+- Codes promo avec conditions (montant min, validité, usage unique)
+- Livraison gratuite au-dessus d'un certain montant
+
+### User Experience
+- Panier persistant entre sessions (localStorage + DB)
+- Recommandations basées sur l'historique d'achat
+- Wishlist avec notifications de baisse de prix
+
+### Notifications
+- Email de confirmation de commande
+- SMS/Telegram pour rappels de RDV
+- Notifications push pour les promotions
+
+## Constantes métier
+```python
+# Durées
+CART_RESERVATION_MINUTES = 15
+ORDER_CANCELLATION_HOURS = 24
+APPOINTMENT_REMINDER_HOURS = 24
+
+# Limites
+MAX_CART_ITEMS = 50
+MAX_PRODUCT_QUANTITY = 99
+FREE_SHIPPING_THRESHOLD = 50.00
+
+# Statuts
+class OrderStatus(str, Enum):
+    PENDING = "pending"
+    PAID = "paid"
+    PROCESSING = "processing"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+    REFUNDED = "refunded"
+
+class AppointmentStatus(str, Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    NO_SHOW = "no_show"
+```
+
+## Intégrations externes
+
+### Stripe
+- Webhooks pour synchronisation automatique
+- Idempotence sur les paiements
+- Gestion des échecs de paiement
+
+### Telegram Bot
+- Notifications temps réel des nouvelles commandes
+- Alerts pour messages chat
+- Rapports quotidiens de ventes
+
+### Email
+- Templates HTML responsive
+- Queue d'envoi avec retry automatique
+- Tracking d'ouverture et clics
+
+## Tâches Celery
+Les tâches asynchrones sont dans [worker/tasks/](mdc:worker/tasks/) :
+- Envoi d'emails
+- Synchronisation Stripe
+- Génération de rapports
+- Nettoyage des données
+
+## Sécurité métier
+- Validation des permissions utilisateur
+- Rate limiting sur les API sensibles
+- Audit trail des actions importantes
+- Chiffrement des données sensibles
+
+## Performance
+- Cache Redis pour les données fréquemment accédées
+- Pagination sur toutes les listes
+- Optimisation des requêtes N+1
+- CDN pour les images produits
