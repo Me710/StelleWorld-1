@@ -123,6 +123,9 @@ dev-run: ## Lancer en mode développement sans Docker
 	cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 &
 	cd frontend && python -m http.server 8080
 
+dev-backend: ## Lancer uniquement le backend sans Docker
+	cd backend && python run.py
+
 # Production
 prod-deploy: ## Déploiement en production
 	@echo "🚀 Déploiement en production..."

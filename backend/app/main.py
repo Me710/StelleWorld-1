@@ -9,10 +9,18 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
-from app.core.config import settings
-from app.core.database import engine, Base
-from app.api import auth, products, orders, subscriptions, appointments, chat, analytics
-from app.websocket.chat_handler import chat_router
+# Handle both direct execution and package import
+try:
+    from .core.config import settings
+    from .core.database import engine, Base
+    from .api import auth, products, orders, subscriptions, appointments, chat, analytics
+    from .websocket.chat_handler import router as chat_router
+except ImportError:
+    # When running directly, use absolute imports
+    from app.core.config import settings
+    from app.core.database import engine, Base
+    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics
+    from app.websocket.chat_handler import router as chat_router
 
 # Création des tables
 Base.metadata.create_all(bind=engine)
@@ -98,7 +106,7 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "main:app",
+        "app.main:app",  # Fixed: use the correct module path
         host="0.0.0.0",
         port=8000,
         reload=True,

@@ -10,7 +10,7 @@ from datetime import datetime
 from app.core.database import get_db
 from app.core.security import get_current_user, get_current_admin_user
 from app.models.chat import ChatConversation, ChatMessage, MessageType, ChatStatus
-from app.models.user import User
+
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ async def start_conversation(
     subject: str = None,
     initial_message: str = None,
     session_id: str = None,
-    current_user: User = Depends(get_current_user) if False else None,
+    current_user = Depends(get_current_user) if False else None,
     db: Session = Depends(get_db)
 ) -> Any:
     """Démarrer une nouvelle conversation de chat"""
@@ -85,7 +85,7 @@ async def start_conversation(
 @router.get("/conversations/{conversation_id}")
 async def get_conversation(
     conversation_id: int,
-    current_user: User = Depends(get_current_user) if False else None,
+    current_user = Depends(get_current_user) if False else None,
     db: Session = Depends(get_db)
 ) -> Any:
     """Obtenir une conversation et ses messages"""
@@ -154,7 +154,7 @@ async def send_message(
     message_type: MessageType = MessageType.TEXT,
     attachment_url: str = None,
     attachment_name: str = None,
-    current_user: User = Depends(get_current_user) if False else None,
+    current_user = Depends(get_current_user) if False else None,
     db: Session = Depends(get_db)
 ) -> Any:
     """Envoyer un message dans une conversation"""
@@ -211,7 +211,7 @@ async def send_message(
 
 @router.get("/conversations")
 async def get_user_conversations(
-    current_user: User = Depends(get_current_user),
+    current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ) -> Any:
     """Obtenir les conversations de l'utilisateur connecté"""
@@ -243,7 +243,7 @@ async def close_conversation(
     conversation_id: int,
     rating: int = None,
     feedback: str = None,
-    current_user: User = Depends(get_current_user) if False else None,
+    current_user = Depends(get_current_user) if False else None,
     db: Session = Depends(get_db)
 ) -> Any:
     """Fermer une conversation"""
@@ -321,7 +321,7 @@ async def admin_reply(
     conversation_id: int,
     content: str,
     admin_name: str = "Support",
-    current_admin: User = Depends(get_current_admin_user),
+    current_admin = Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ) -> Any:
     """Répondre à une conversation en tant qu'admin"""

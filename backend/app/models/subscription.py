@@ -63,7 +63,7 @@ class Subscription(Base):
     ended_at = Column(DateTime, nullable=True)
     
     # Métadonnées
-    metadata = Column(Text, nullable=True)  # JSON pour données supplémentaires
+    metadata_json = Column(Text, nullable=True)  # JSON pour données supplémentaires
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

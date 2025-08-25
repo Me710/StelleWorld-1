@@ -1,5 +1,5 @@
 """
-Configuration de la base de données PostgreSQL avec SQLAlchemy
+Configuration de la base de données SQLite avec SQLAlchemy
 """
 
 from sqlalchemy import create_engine
@@ -7,11 +7,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
-# Moteur de base de données
+# Moteur de base de données SQLite
 engine = create_engine(
     settings.DATABASE_URL,
-    pool_pre_ping=True,
-    pool_recycle=300,
+    connect_args={"check_same_thread": False},  # Nécessaire pour SQLite
     echo=settings.DEBUG
 )
 

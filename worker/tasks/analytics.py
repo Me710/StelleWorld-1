@@ -10,8 +10,8 @@ import os
 from datetime import datetime, timedelta
 
 # Configuration de la base de données
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://stelleworld:password@localhost:5432/stelleworld")
-engine = create_engine(DATABASE_URL)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./stelleworld.db")
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Import des modèles (à adapter selon la structure)

@@ -77,7 +77,7 @@ StelleWorld/
 │   │       ├── __init__.py
 │   │       └── chat_handler.py
 │   ├── alembic/               # Migrations DB
-│   ├── tests/                 # Tests unitaires
+│   ├──s/                 # Tests unitaires
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/                   # Interface utilisateur
@@ -88,7 +88,7 @@ StelleWorld/
 │   │   ├── js/
 │   │   │   ├── main.js
 │   │   │   ├── chat.js
-│   │   │   ├── cart.js
+│   │   │   ├── cart.js test
 │   │   │   └── components/
 │   │   └── images/
 │   ├── templates/

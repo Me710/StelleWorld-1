@@ -39,7 +39,7 @@ target_metadata = Base.metadata
 
 def get_url():
     """Obtenir l'URL de base de données depuis les variables d'environnement"""
-    return os.getenv("DATABASE_URL", "postgresql://stelleworld:password@localhost:5432/stelleworld")
+    return os.getenv("DATABASE_URL", "sqlite:///./stelleworld.db")
 
 
 def run_migrations_offline() -> None:

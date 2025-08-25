@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     ALLOWED_HOSTS: List[str] = ["*"]
     
     # Base de données
-    DATABASE_URL: str = "postgresql://stelleworld:password@localhost:5432/stelleworld"
+    DATABASE_URL: str = "sqlite:///./stelleworld.db"
     
     # Sécurité JWT
     SECRET_KEY: str = "your-secret-key-change-in-production"
