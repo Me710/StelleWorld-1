@@ -414,3 +414,331 @@
     bottom: 0;
     left: 0;
 }
+
+/* ===== HERO SECTION ANIMATIONS ===== */
+
+/* Particules flottantes */
+.floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.particle:nth-child(1) {
+    width: 4px;
+    height: 4px;
+    left: 10%;
+    animation-delay: 0s;
+    animation-duration: 6s;
+}
+
+.particle:nth-child(2) {
+    width: 6px;
+    height: 6px;
+    left: 20%;
+    animation-delay: 2s;
+    animation-duration: 8s;
+}
+
+.particle:nth-child(3) {
+    width: 3px;
+    height: 3px;
+    left: 70%;
+    animation-delay: 4s;
+    animation-duration: 7s;
+}
+
+.particle:nth-child(4) {
+    width: 5px;
+    height: 5px;
+    left: 80%;
+    animation-delay: 1s;
+    animation-duration: 9s;
+}
+
+.particle:nth-child(5) {
+    width: 4px;
+    height: 4px;
+    left: 50%;
+    animation-delay: 3s;
+    animation-duration: 5s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-10vh) rotate(180deg);
+    }
+}
+
+/* Animation de réduction au scroll */
+.hero-shrink {
+    transform: scale(0.8);
+    opacity: 0.7;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-video-shrink {
+    transform: scale(1.1);
+    filter: blur(2px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animation d'apparition des sections */
+.section-fade-in {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Animation de parallax pour les éléments */
+.parallax-element {
+    transition: transform 0.1s ease-out;
+}
+
+/* Animation de réduction progressive de la section hero */
+.hero-content-shrink {
+    transform: scale(0.9);
+    opacity: 0.8;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-title-shrink {
+    font-size: clamp(2rem, 8vw, 4rem);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-subtitle-shrink {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animation de glissement des best sellers */
+.best-sellers-slide-in {
+    transform: translateX(-100px);
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.best-sellers-slide-in.visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Animation de stagger pour les cartes de produits */
+.product-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.product-card:nth-child(1) { transition-delay: 0.1s; }
+.product-card:nth-child(2) { transition-delay: 0.2s; }
+.product-card:nth-child(3) { transition-delay: 0.3s; }
+.product-card:nth-child(4) { transition-delay: 0.4s; }
+
+/* Animation de hover améliorée pour les cartes */
+.product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Animation de gradient pour les boutons */
+.gradient-button {
+    background: linear-gradient(45deg, #3B82F6, #8B5CF6, #EC4899);
+    background-size: 300% 300%;
+    animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animation de pulsation pour les badges */
+.badge-pulse {
+    animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
+    }
+}
+
+/* Animation de texte qui apparaît lettre par lettre */
+.text-reveal {
+    overflow: hidden;
+}
+
+.text-reveal span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(100%);
+    animation: text-reveal 0.6s ease forwards;
+}
+
+.text-reveal span:nth-child(1) { animation-delay: 0.1s; }
+.text-reveal span:nth-child(2) { animation-delay: 0.2s; }
+.text-reveal span:nth-child(3) { animation-delay: 0.3s; }
+.text-reveal span:nth-child(4) { animation-delay: 0.4s; }
+.text-reveal span:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes text-reveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation de rotation pour les icônes */
+.icon-rotate {
+    transition: transform 0.3s ease;
+}
+
+.icon-rotate:hover {
+    transform: rotate(360deg);
+}
+
+/* Animation de glissement pour les éléments de navigation */
+.nav-slide {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.nav-slide.visible {
+    transform: translateX(0);
+}
+
+/* Animation de rebond pour les éléments d'attention */
+.bounce-attention {
+    animation: bounce-attention 1s ease infinite;
+}
+
+@keyframes bounce-attention {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Animation de shimmer pour les éléments de chargement */
+.shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Animation de scale pour les éléments interactifs */
+.scale-on-hover {
+    transition: transform 0.2s ease;
+}
+
+.scale-on-hover:hover {
+    transform: scale(1.05);
+}
+
+/* Animation de fade pour les transitions de page */
+.page-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.page-fade.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive animations */
+@media (max-width: 768px) {
+    .hero-title-shrink {
+        font-size: clamp(1.5rem, 6vw, 3rem);
+    }
+    
+    .hero-subtitle-shrink {
+        font-size: clamp(0.9rem, 3vw, 1.2rem);
+    }
+    
+    .particle {
+        display: none; /* Désactiver les particules sur mobile pour les performances */
+    }
+}
+
+/* Optimisations de performance */
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+
+/* Préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+    .particle,
+    .floating-particles,
+    .hero-shrink,
+    .hero-video-shrink,
+    .section-fade-in,
+    .best-sellers-slide-in,
+    .product-card,
+    .gradient-button,
+    .badge-pulse,
+    .text-reveal span,
+    .icon-rotate,
+    .nav-slide,
+    .bounce-attention,
+    .shimmer {
+        animation: none;
+        transition: none;
+    }
+}

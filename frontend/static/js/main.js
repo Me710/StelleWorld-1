@@ -39,6 +39,14 @@ function loadUserData() {
             if (data.email) {
                 currentUser = data;
                 updateUIForUser(data);
+                
+                // Afficher le lien d'administration si l'utilisateur est admin
+                if (data.is_admin) {
+                    const adminLink = document.getElementById('admin-link');
+                    if (adminLink) {
+                        adminLink.classList.remove('hidden');
+                    }
+                }
             } else {
                 localStorage.removeItem('access_token');
             }

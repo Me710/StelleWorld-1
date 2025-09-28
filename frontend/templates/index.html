@@ -3,28 +3,218 @@
 {% block title %}StelleWorld - Boutique en ligne interactive{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div class="text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-6">
-                Bienvenue chez <span class="text-yellow-300">StelleWorld</span>
+<!-- Hero Section Full Screen avec Vidéo -->
+<section id="hero-section" class="relative h-screen w-full overflow-hidden">
+    <!-- Vidéo de fond -->
+    <div class="absolute inset-0 z-0">
+        <!-- Vidéo YouTube de beauté intégrée -->
+        <iframe 
+            id="hero-video" 
+            class="w-full h-full object-cover" 
+            src="https://www.youtube.com/embed/9bZkp7q19f0?autoplay=1&mute=1&loop=1&playlist=9bZkp7q19f0&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&cc_load_policy=0&start=0&end=30"
+            frameborder="0" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen
+            style="pointer-events: none;">
+        </iframe>
+        <!-- Overlay gradient pour améliorer la lisibilité -->
+        <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+    </div>
+    
+    <!-- Contenu principal -->
+    <div class="relative z-10 h-full flex items-center justify-center">
+        <div class="text-center text-white px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+            <!-- Badge promotionnel -->
+            <div class="inline-flex items-center badge-pulse bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-6 py-2 rounded-full text-sm font-semibold mb-6">
+                <i class="fas fa-fire mr-2"></i>
+                NOUVEAU : -50% sur tous les produits cette semaine !
+            </div>
+            
+            <!-- Titre principal -->
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+                Bienvenue chez <span class="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">StelleWorld</span>
             </h1>
-            <p class="text-xl md:text-2xl mb-8 text-blue-100">
-                Votre boutique en ligne moderne avec chat temps réel, abonnements flexibles et services personnalisés
+            
+            <!-- Sous-titre -->
+            <p class="text-xl md:text-2xl lg:text-3xl mb-8 text-gray-200 max-w-4xl mx-auto leading-relaxed">
+                Découvrez une expérience shopping révolutionnaire avec nos produits exclusifs, 
+                <span class="text-yellow-300 font-semibold">chat temps réel</span> et services personnalisés
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            
+            <!-- Boutons d'action -->
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
                 <a href="/products" 
-                   class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center">
-                    <i class="fas fa-shopping-bag mr-2"></i>
+                   class="group gradient-button bg-gradient-to-r from-blue-600 to-purple-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl inline-flex items-center">
+                    <i class="fas fa-shopping-bag mr-3 group-hover:animate-bounce"></i>
                     Découvrir nos produits
+                    <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
                 </a>
                 <a href="/appointments" 
-                   class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors inline-flex items-center">
-                    <i class="fas fa-calendar-alt mr-2"></i>
+                   class="group border-2 border-white text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-gray-900 transition-all duration-300 transform hover:scale-105 inline-flex items-center">
+                    <i class="fas fa-calendar-alt mr-3"></i>
                     Réserver un RDV
                 </a>
             </div>
+            
+            <!-- Indicateurs de scroll -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <div class="flex flex-col items-center text-white/70">
+                    <span class="text-sm mb-2">Découvrez plus</span>
+                    <i class="fas fa-chevron-down text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Particules flottantes -->
+    <div class="absolute inset-0 z-5">
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Section Best Sellers avec animation de réduction -->
+<section id="best-sellers-section" class="section-fade-in py-20 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+    <!-- Background pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="30" cy="30" r="2"/></g></svg>');"></div>
+    </div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête de section -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6">
+                <i class="fas fa-fire mr-2"></i>
+                MEILLEURES VENTES
+            </div>
+            <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                Les <span class="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">Best Sellers</span>
+            </h2>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                Découvrez les produits préférés de nos clients, sélectionnés pour leur qualité exceptionnelle
+            </p>
+        </div>
+        
+        <!-- Grille des best sellers -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <!-- Produit 1 -->
+            <div class="group product-card bg-white/10 backdrop-blur-lg rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                <div class="relative mb-4">
+                    <div class="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold z-10">
+                        #1
+                    </div>
+                    <img src="/static/images/products/bestseller-1.jpg" 
+                         alt="Produit Best Seller 1" 
+                         class="w-full h-48 object-cover rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <h3 class="text-xl font-bold mb-2 group-hover:text-yellow-300 transition-colors">Produit Premium</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Description du produit exceptionnel qui séduit nos clients</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl font-bold text-yellow-300">99€</span>
+                        <span class="text-sm text-gray-400 line-through">149€</span>
+                    </div>
+                    <div class="flex items-center text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <span class="ml-1 text-sm">4.9</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-400">1,234 vendus ce mois</div>
+            </div>
+            
+            <!-- Produit 2 -->
+            <div class="group product-card bg-white/10 backdrop-blur-lg rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                <div class="relative mb-4">
+                    <div class="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold z-10">
+                        #2
+                    </div>
+                    <img src="/static/images/products/bestseller-2.jpg" 
+                         alt="Produit Best Seller 2" 
+                         class="w-full h-48 object-cover rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <h3 class="text-xl font-bold mb-2 group-hover:text-yellow-300 transition-colors">Collection Exclusive</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Une collection limitée qui fait sensation</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl font-bold text-yellow-300">79€</span>
+                        <span class="text-sm text-gray-400 line-through">119€</span>
+                    </div>
+                    <div class="flex items-center text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <span class="ml-1 text-sm">4.8</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-400">987 vendus ce mois</div>
+            </div>
+            
+            <!-- Produit 3 -->
+            <div class="group product-card bg-white/10 backdrop-blur-lg rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                <div class="relative mb-4">
+                    <div class="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold z-10">
+                        #3
+                    </div>
+                    <img src="/static/images/products/bestseller-3.jpg" 
+                         alt="Produit Best Seller 3" 
+                         class="w-full h-48 object-cover rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <h3 class="text-xl font-bold mb-2 group-hover:text-yellow-300 transition-colors">Innovation Tech</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Technologie de pointe pour une expérience unique</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl font-bold text-yellow-300">199€</span>
+                        <span class="text-sm text-gray-400 line-through">299€</span>
+                    </div>
+                    <div class="flex items-center text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <span class="ml-1 text-sm">4.9</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-400">756 vendus ce mois</div>
+            </div>
+            
+            <!-- Produit 4 -->
+            <div class="group product-card bg-white/10 backdrop-blur-lg rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                <div class="relative mb-4">
+                    <div class="absolute -top-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold z-10">
+                        #4
+                    </div>
+                    <img src="/static/images/products/bestseller-4.jpg" 
+                         alt="Produit Best Seller 4" 
+                         class="w-full h-48 object-cover rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <h3 class="text-xl font-bold mb-2 group-hover:text-yellow-300 transition-colors">Édition Limitée</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Une édition spéciale qui ne sera plus disponible</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl font-bold text-yellow-300">149€</span>
+                        <span class="text-sm text-gray-400 line-through">199€</span>
+                    </div>
+                    <div class="flex items-center text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <span class="ml-1 text-sm">4.7</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-400">623 vendus ce mois</div>
+            </div>
+        </div>
+        
+        <!-- Bouton Voir tous les best sellers -->
+        <div class="text-center">
+            <a href="/products?filter=bestsellers" 
+               class="group gradient-button inline-flex items-center bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                <i class="fas fa-fire mr-3 group-hover:animate-pulse"></i>
+                Voir tous les best sellers
+                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+            </a>
         </div>
     </div>
 </section>

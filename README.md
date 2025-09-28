@@ -77,7 +77,7 @@ StelleWorld/
 │   │       ├── __init__.py
 │   │       └── chat_handler.py
 │   ├── alembic/               # Migrations DB
-│   ├──s/                 # Tests unitaires
+│   ├── tests/                 # Tests unitaires
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/                   # Interface utilisateur

@@ -13,13 +13,13 @@ from fastapi.responses import HTMLResponse
 try:
     from .core.config import settings
     from .core.database import engine, Base
-    from .api import auth, products, orders, subscriptions, appointments, chat, analytics
+    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin
     from .websocket.chat_handler import router as chat_router
 except ImportError:
     # When running directly, use absolute imports
     from app.core.config import settings
     from app.core.database import engine, Base
-    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics
+    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin
     from app.websocket.chat_handler import router as chat_router
 
 # Création des tables
@@ -57,6 +57,7 @@ app.include_router(subscriptions.router, prefix="/api/subscriptions", tags=["Sub
 app.include_router(appointments.router, prefix="/api/appointments", tags=["Appointments"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 
 # WebSocket pour chat temps réel
 app.include_router(chat_router, prefix="/ws")
@@ -92,10 +93,60 @@ async def profile_page(request: Request):
     """Page profil utilisateur"""
     return templates.TemplateResponse("user/profile.html", {"request": request})
 
+@app.get("/admin/login", response_class=HTMLResponse)
+async def admin_login_page(request: Request):
+    """Page de connexion administrateur"""
+    return templates.TemplateResponse("admin/login.html", {"request": request})
+
+@app.get("/admin/access-denied", response_class=HTMLResponse)
+async def admin_access_denied(request: Request):
+    """Page d'accès refusé pour l'administration"""
+    return templates.TemplateResponse("admin/access-denied.html", {"request": request})
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_dashboard(request: Request):
     """Dashboard administrateur"""
     return templates.TemplateResponse("admin/dashboard.html", {"request": request})
+
+@app.get("/admin/products", response_class=HTMLResponse)
+async def admin_products(request: Request):
+    """Page de gestion des produits"""
+    return templates.TemplateResponse("admin/products.html", {"request": request})
+
+@app.get("/admin/products/create", response_class=HTMLResponse)
+async def admin_create_product(request: Request):
+    """Page de création de produit"""
+    return templates.TemplateResponse("admin/product-form.html", {"request": request})
+
+@app.get("/admin/products/{product_id}/edit", response_class=HTMLResponse)
+async def admin_edit_product(request: Request):
+    """Page de modification de produit"""
+    return templates.TemplateResponse("admin/product-form.html", {"request": request})
+
+@app.get("/admin/orders", response_class=HTMLResponse)
+async def admin_orders(request: Request):
+    """Page de gestion des commandes"""
+    return templates.TemplateResponse("admin/orders.html", {"request": request})
+
+@app.get("/admin/customers", response_class=HTMLResponse)
+async def admin_customers(request: Request):
+    """Page de gestion des clients"""
+    return templates.TemplateResponse("admin/customers.html", {"request": request})
+
+@app.get("/admin/inventory", response_class=HTMLResponse)
+async def admin_inventory(request: Request):
+    """Page de gestion de l'inventaire"""
+    return templates.TemplateResponse("admin/inventory.html", {"request": request})
+
+@app.get("/admin/categories", response_class=HTMLResponse)
+async def admin_categories(request: Request):
+    """Page de gestion des catégories"""
+    return templates.TemplateResponse("admin/categories.html", {"request": request})
+
+@app.get("/admin/stats/sales", response_class=HTMLResponse)
+async def admin_sales_stats(request: Request):
+    """Page des statistiques de ventes"""
+    return templates.TemplateResponse("admin/stats/sales.html", {"request": request})
 
 # Health check
 @app.get("/health")
