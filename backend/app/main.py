@@ -73,6 +73,16 @@ async def products_page(request: Request):
     """Page catalogue produits"""
     return templates.TemplateResponse("products/catalog.html", {"request": request})
 
+@app.get("/products/catalog", response_class=HTMLResponse)
+async def catalog_page(request: Request):
+    """Page catalogue e-commerce"""
+    return templates.TemplateResponse("products/catalog.html", {"request": request})
+
+@app.get("/products/demo", response_class=HTMLResponse)
+async def demo_page(request: Request):
+    """Page de démonstration de l'interface e-commerce"""
+    return templates.TemplateResponse("products/demo.html", {"request": request})
+
 @app.get("/cart", response_class=HTMLResponse)
 async def cart_page(request: Request):
     """Page panier"""
