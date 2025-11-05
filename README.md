@@ -202,9 +202,9 @@ docker-compose exec backend alembic upgrade head
 ```
 
 5. **Accès à l'application**
-- Frontend : http://localhost:8080
+- Frontend : http://localhost:8000
 - API : http://localhost:8000
-- Admin : http://localhost:8080/admin
+- Admin : http://localhost:8000/admin
 
 ### Déploiement production
 

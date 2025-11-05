@@ -13,13 +13,13 @@ from fastapi.responses import HTMLResponse
 try:
     from .core.config import settings
     from .core.database import engine, Base
-    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin
+    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner
     from .websocket.chat_handler import router as chat_router
 except ImportError:
     # When running directly, use absolute imports
     from app.core.config import settings
     from app.core.database import engine, Base
-    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin
+    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner
     from app.websocket.chat_handler import router as chat_router
 
 # Création des tables
@@ -58,6 +58,7 @@ app.include_router(appointments.router, prefix="/api/appointments", tags=["Appoi
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(banner.router, tags=["Banners"])
 
 # WebSocket pour chat temps réel
 app.include_router(chat_router, prefix="/ws")
@@ -157,6 +158,40 @@ async def admin_categories(request: Request):
 async def admin_sales_stats(request: Request):
     """Page des statistiques de ventes"""
     return templates.TemplateResponse("admin/stats/sales.html", {"request": request})
+
+@app.get("/admin/banner", response_class=HTMLResponse)
+async def admin_banner(request: Request):
+    """Page de gestion de la bannière d'annonce"""
+    return templates.TemplateResponse("admin/banner.html", {"request": request})
+
+# Routes Collections (inspiré de bswbeautyca.com)
+@app.get("/collections", response_class=HTMLResponse)
+async def collections_page(request: Request):
+    """Page principale des collections - affiche toutes les catégories"""
+    return templates.TemplateResponse("collections.html", {"request": request})
+
+@app.get("/collections/{collection_name}", response_class=HTMLResponse)
+async def collection_page(request: Request, collection_name: str):
+    """Page de collection dynamique - affiche les produits d'une catégorie"""
+    return templates.TemplateResponse("products/catalog.html", {
+        "request": request,
+        "collection": collection_name
+    })
+
+@app.get("/locations", response_class=HTMLResponse)
+async def locations_page(request: Request):
+    """Page des emplacements/magasins"""
+    return templates.TemplateResponse("locations.html", {"request": request})
+
+@app.get("/sale-flyer", response_class=HTMLResponse)
+async def sale_flyer_page(request: Request):
+    """Page du prospectus de soldes"""
+    return templates.TemplateResponse("sale-flyer.html", {"request": request})
+
+@app.get("/contact", response_class=HTMLResponse)
+async def contact_page(request: Request):
+    """Page de contact"""
+    return templates.TemplateResponse("contact.html", {"request": request})
 
 # Health check
 @app.get("/health")
