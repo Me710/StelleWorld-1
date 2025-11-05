@@ -1,0 +1,189 @@
+<!-- Header moderne inspiré de bswbeautyca.com -->
+<header class="header-wrapper">
+    <!-- Bannière d'annonce -->
+    <div id="announcement-banner" class="announcement-banner">
+        <div class="announcement-content">
+            <p class="announcement-text">
+                💌 Bienvenue sur StelleWorld ! Découvrez nos nouveaux produits.
+            </p>
+            <button class="announcement-close" onclick="closeAnnouncement()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header principal -->
+    <div class="header-main">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="header-logo">
+                <a href="/">
+                    <span class="logo-text">StelleWorld</span>
+                </a>
+            </div>
+            
+            <!-- Shop All Collections -->
+            <div class="hidden lg:flex items-center">
+                <a href="/collections" class="text-sm font-medium text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 rounded-lg hover:bg-pink-50">
+                    <i class="fas fa-th-large mr-2"></i>Toutes les Collections
+                </a>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="header-search">
+                <form action="/products/search" method="get" class="search-form">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        class="search-input" 
+                        placeholder="Rechercher un produit..."
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Icônes à droite -->
+            <div class="header-actions">
+                <!-- Compte utilisateur -->
+                <a href="/profile" class="header-icon" title="Mon compte">
+                    <i class="far fa-user"></i>
+                </a>
+
+                <!-- Panier -->
+                <a href="/cart" class="header-icon header-cart" title="Mon panier">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </a>
+
+                <!-- Instagram -->
+                <a href="https://instagram.com/stelleworld" target="_blank" class="header-icon" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+
+                <!-- Menu mobile toggle -->
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation principale -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/collections/new-arrivals" class="nav-link">NEW ARRIVALS</a>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/wigs" class="nav-link">
+                        WIGS
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/wigs/synthetic" class="dropdown-item">Synthetic Wigs</a>
+                        <a href="/collections/wigs/human-hair" class="dropdown-item">Human Hair Wigs</a>
+                        <a href="/collections/wigs/lace-front" class="dropdown-item">Lace Front Wigs</a>
+                    </div>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/hair" class="nav-link">
+                        HAIR
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/hair/extensions" class="dropdown-item">Hair Extensions</a>
+                        <a href="/collections/hair/weaves" class="dropdown-item">Weaves</a>
+                        <a href="/collections/hair/closures" class="dropdown-item">Closures</a>
+                    </div>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/braid" class="nav-link">
+                        BRAID
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/braid/kanekalon" class="dropdown-item">Kanekalon Hair</a>
+                        <a href="/collections/braid/xpression" class="dropdown-item">X-pression Hair</a>
+                        <a href="/collections/braid/afro" class="dropdown-item">Afro Kinky</a>
+                    </div>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/hair-skin-care" class="nav-link">
+                        HAIR & SKIN CARE
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/hair-care" class="dropdown-item">Hair Care</a>
+                        <a href="/collections/skin-care" class="dropdown-item">Skin Care</a>
+                        <a href="/collections/treatments" class="dropdown-item">Treatments</a>
+                    </div>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/beauty" class="nav-link">
+                        BEAUTY
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/beauty/makeup" class="dropdown-item">Makeup</a>
+                        <a href="/collections/beauty/cosmetics" class="dropdown-item">Cosmetics</a>
+                        <a href="/collections/beauty/accessories" class="dropdown-item">Accessories</a>
+                    </div>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/tools" class="nav-link">
+                        TOOLS
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/tools/styling" class="dropdown-item">Styling Tools</a>
+                        <a href="/collections/tools/brushes" class="dropdown-item">Brushes & Combs</a>
+                        <a href="/collections/tools/appliances" class="dropdown-item">Appliances</a>
+                    </div>
+                </li>
+                <li class="nav-item nav-sale">
+                    <a href="/collections/sale" class="nav-link">SALE</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/locations" class="nav-link">LOCATIONS</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/sale-flyer" class="nav-link">SALE FLYER</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/contact" class="nav-link">CONTACT</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Menu mobile -->
+    <div id="mobile-nav" class="mobile-nav">
+        <div class="mobile-nav-header">
+            <span class="mobile-nav-title">Menu</span>
+            <button class="mobile-nav-close" onclick="toggleMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-nav-content">
+            <a href="/collections" class="mobile-nav-item" style="background: linear-gradient(135deg, #fce7f3, #f3e7fc); color: #831843; font-weight: 600;">
+                <i class="fas fa-th-large mr-2"></i>TOUTES LES COLLECTIONS
+            </a>
+            <a href="/collections/new-arrivals" class="mobile-nav-item">NEW ARRIVALS</a>
+            <a href="/collections/wigs" class="mobile-nav-item">WIGS</a>
+            <a href="/collections/hair" class="mobile-nav-item">HAIR</a>
+            <a href="/collections/braid" class="mobile-nav-item">BRAID</a>
+            <a href="/collections/hair-skin-care" class="mobile-nav-item">HAIR & SKIN CARE</a>
+            <a href="/collections/beauty" class="mobile-nav-item">BEAUTY</a>
+            <a href="/collections/tools" class="mobile-nav-item">TOOLS</a>
+            <a href="/collections/sale" class="mobile-nav-item mobile-nav-sale">SALE</a>
+            <a href="/locations" class="mobile-nav-item">LOCATIONS</a>
+            <a href="/sale-flyer" class="mobile-nav-item">SALE FLYER</a>
+            <a href="/contact" class="mobile-nav-item">CONTACT</a>
+        </div>
+    </div>
+</header>
+

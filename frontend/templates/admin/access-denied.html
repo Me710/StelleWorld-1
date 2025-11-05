@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Refusé - StelleWorld</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        .access-denied-bg {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+    </style>
+</head>
+<body class="access-denied-bg min-h-screen flex items-center justify-center p-4">
+    
+    <div class="max-w-md w-full">
+        
+        <!-- Icône d'erreur -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
+                <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Accès Refusé</h1>
+            <p class="text-red-100">Privilèges administrateur requis</p>
+        </div>
+
+        <!-- Message d'erreur -->
+        <div class="bg-white/20 backdrop-blur rounded-xl p-8 shadow-2xl text-center">
+            <div class="space-y-4">
+                <div class="p-4 bg-red-100/30 border border-red-200/50 rounded-lg">
+                    <p class="text-white font-medium">
+                        Vous n'avez pas les permissions nécessaires pour accéder à cette section.
+                    </p>
+                </div>
+                
+                <div class="text-sm text-red-100 space-y-2">
+                    <p>Cette zone est réservée aux administrateurs de StelleWorld.</p>
+                    <p>Si vous pensez que c'est une erreur, contactez votre administrateur.</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-3 mt-8">
+                <a href="/admin/login" 
+                   class="flex-1 inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg text-red-700 bg-white hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Se connecter en tant qu'admin
+                </a>
+                
+                <a href="/" 
+                   class="flex-1 inline-flex items-center justify-center px-4 py-3 border border-white/30 text-sm font-medium rounded-lg text-white hover:bg-white/10 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Retour à l'accueil
+                </a>
+            </div>
+        </div>
+
+        <!-- Contact support -->
+        <div class="text-center mt-6">
+            <p class="text-red-100 text-sm">
+                Besoin d'aide ? 
+                <a href="mailto:support@stelleworld.com" class="text-white hover:underline font-medium">
+                    Contactez le support
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Retour automatique après 30 secondes -->
+    <script>
+        // Optionnel : redirection automatique après 30 secondes
+        setTimeout(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirect = urlParams.get('redirect') || '/';
+            window.location.href = redirect === '/admin' ? '/' : redirect;
+        }, 30000);
+    </script>
+</body>
+</html>

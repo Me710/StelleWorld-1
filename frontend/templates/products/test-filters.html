@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Filtres</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9fafb;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar filtres */
+        .filters-sidebar {
+            width: 320px !important;
+            flex-shrink: 0;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .filters-sidebar.collapsed {
+            width: 0 !important;
+            border-right: none;
+            min-width: 0 !important;
+            padding: 0;
+        }
+
+        /* Zone principale */
+        .products-area {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Bouton filtres */
+        .filters-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filters-toggle-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .chevron {
+            transition: transform 0.3s;
+        }
+
+        .filter-item {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar filtres -->
+        <div id="filters-sidebar" class="filters-sidebar collapsed">
+            <h2 style="margin-bottom: 20px; font-size: 18px;">Filtres</h2>
+            <div class="filter-item">
+                <label>
+                    <input type="checkbox"> Électronique
+                </label>
+            </div>
+            <div class="filter-item">
+                <label>
+                    <input type="checkbox"> Vêtements
+                </label>
+            </div>
+            <div class="filter-item">
+                <label>
+                    <input type="checkbox"> Livres
+                </label>
+            </div>
+        </div>
+
+        <!-- Zone principale -->
+        <div class="products-area">
+            <h1 style="margin-bottom: 20px;">Test des Filtres Rétractables</h1>
+            
+            <!-- Bouton toggle -->
+            <button id="filters-toggle" class="filters-toggle-btn">
+                <i class="fas fa-filter"></i>
+                <span>Filtres</span>
+                <i class="fas fa-chevron-right chevron" id="filter-chevron"></i>
+            </button>
+
+            <div style="margin-top: 30px;">
+                <p>Cliquez sur le bouton "Filtres" ci-dessus.</p>
+                <p style="margin-top: 10px;">La barre latérale devrait s'ouvrir/se fermer.</p>
+            </div>
+
+            <!-- Console de débogage -->
+            <div id="debug-console" style="margin-top: 30px; padding: 20px; background: #1f2937; color: #10b981; border-radius: 8px; font-family: monospace; font-size: 12px;">
+                <div style="color: white; margin-bottom: 10px; font-weight: bold;">Console de débogage:</div>
+                <div id="debug-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour logger dans la page
+        function debugLog(message, type = 'info') {
+            const output = document.getElementById('debug-output');
+            const time = new Date().toLocaleTimeString();
+            const colors = {
+                'info': '#10b981',
+                'error': '#ef4444',
+                'success': '#3b82f6'
+            };
+            output.innerHTML += `<div style="color: ${colors[type]};">[${time}] ${message}</div>`;
+            console.log(message);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('✅ DOM chargé', 'success');
+            
+            const filtersToggle = document.getElementById('filters-toggle');
+            const filtersSidebar = document.getElementById('filters-sidebar');
+            const filterChevron = document.getElementById('filter-chevron');
+            
+            debugLog(`Bouton trouvé: ${!!filtersToggle}`, filtersToggle ? 'success' : 'error');
+            debugLog(`Sidebar trouvée: ${!!filtersSidebar}`, filtersSidebar ? 'success' : 'error');
+            debugLog(`Chevron trouvé: ${!!filterChevron}`, filterChevron ? 'success' : 'error');
+            
+            if (filtersToggle && filtersSidebar) {
+                debugLog('✅ Event listener ajouté', 'success');
+                
+                filtersToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    debugLog('🔘 CLIC détecté!', 'success');
+                    
+                    const isCollapsed = filtersSidebar.classList.contains('collapsed');
+                    debugLog(`État actuel: ${isCollapsed ? 'FERMÉ' : 'OUVERT'}`, 'info');
+                    
+                    if (isCollapsed) {
+                        filtersSidebar.classList.remove('collapsed');
+                        debugLog('→ Ouverture des filtres', 'success');
+                        if (filterChevron) {
+                            filterChevron.style.transform = 'rotate(90deg)';
+                        }
+                    } else {
+                        filtersSidebar.classList.add('collapsed');
+                        debugLog('→ Fermeture des filtres', 'success');
+                        if (filterChevron) {
+                            filterChevron.style.transform = 'rotate(0deg)';
+                        }
+                    }
+                });
+            } else {
+                debugLog('❌ ERREUR: Éléments non trouvés!', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
+

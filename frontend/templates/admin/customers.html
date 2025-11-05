@@ -1,0 +1,227 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gestion des Clients{% endblock %}
+
+{% block page_title %}Clients{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- En-tête avec actions -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Gestion des Clients</h2>
+            <p class="mt-1 text-sm text-gray-500">Consultez et gérez vos clients</p>
+        </div>
+        <div class="mt-4 sm:mt-0 flex space-x-3">
+            <button @click="exportCustomers()" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Exporter
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="bg-white p-4 rounded-lg shadow">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Recherche</label>
+                <input type="text" x-model="filters.search" @input.debounce.300ms="loadCustomers()" 
+                       placeholder="Nom, email..."
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                <select x-model="filters.status" @change="loadCustomers()" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Tous</option>
+                    <option value="active">Actifs</option>
+                    <option value="inactive">Inactifs</option>
+                    <option value="verified">Vérifiés</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button @click="resetFilters()" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Réinitialiser
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des clients -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:p-6">
+            <div x-show="loading" class="text-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+                <p class="mt-2 text-gray-500">Chargement des clients...</p>
+            </div>
+
+            <div x-show="!loading && customers.length === 0" class="text-center py-8">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun client</h3>
+                <p class="mt-1 text-sm text-gray-500">Aucun client ne correspond à vos critères de recherche.</p>
+            </div>
+
+            <div x-show="!loading && customers.length > 0" class="space-y-4">
+                <template x-for="customer in customers" :key="customer.id">
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                                    <span class="text-indigo-600 font-medium text-lg" x-text="getInitials(customer.first_name, customer.last_name)"></span>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900" x-text="customer.first_name + ' ' + customer.last_name"></h3>
+                                    <p class="text-sm text-gray-500" x-text="customer.email"></p>
+                                    <div class="flex items-center space-x-4 mt-1">
+                                        <span class="text-xs text-gray-500" x-text="'Inscrit le ' + formatDate(customer.created_at)"></span>
+                                        <span class="text-xs text-gray-500" x-text="customer.orders_count + ' commande(s)'"></span>
+                                        <span class="text-xs text-gray-500" x-text="formatPrice(customer.total_spent) + ' dépensé'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span :class="getStatusColor(customer.is_active, customer.is_verified)" 
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                      x-text="getStatusText(customer.is_active, customer.is_verified)"></span>
+                                <button @click="viewCustomer(customer.id)" 
+                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Voir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Pagination -->
+            <div x-show="!loading && customers.length > 0" class="mt-6 flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Affichage de <span x-text="(currentPage - 1) * pageSize + 1"></span> à 
+                    <span x-text="Math.min(currentPage * pageSize, totalCustomers)"></span> sur 
+                    <span x-text="totalCustomers"></span> clients
+                </div>
+                <div class="flex space-x-2">
+                    <button @click="previousPage()" :disabled="currentPage === 1"
+                            class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Précédent
+                    </button>
+                    <button @click="nextPage()" :disabled="currentPage * pageSize >= totalCustomers"
+                            class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Suivant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('customersPage', () => ({
+        customers: [],
+        loading: true,
+        currentPage: 1,
+        pageSize: 20,
+        totalCustomers: 0,
+        filters: {
+            search: '',
+            status: ''
+        },
+
+        async init() {
+            await this.loadCustomers();
+        },
+
+        async loadCustomers() {
+            this.loading = true;
+            try {
+                const params = new URLSearchParams({
+                    page: this.currentPage,
+                    limit: this.pageSize,
+                    ...this.filters
+                });
+
+                const response = await apiCall(`/admin/customers?${params}`);
+                this.customers = response.customers || [];
+                this.totalCustomers = response.total || 0;
+            } catch (error) {
+                console.error('Erreur lors du chargement des clients:', error);
+                this.customers = [];
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        resetFilters() {
+            this.filters = {
+                search: '',
+                status: ''
+            };
+            this.currentPage = 1;
+            this.loadCustomers();
+        },
+
+        previousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.loadCustomers();
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage * this.pageSize < this.totalCustomers) {
+                this.currentPage++;
+                this.loadCustomers();
+            }
+        },
+
+        viewCustomer(customerId) {
+            window.location.href = `/admin/customers/${customerId}`;
+        },
+
+        exportCustomers() {
+            console.log('Exporter les clients');
+        },
+
+        getInitials(firstName, lastName) {
+            return (firstName[0] + lastName[0]).toUpperCase();
+        },
+
+        getStatusColor(isActive, isVerified) {
+            if (!isActive) return 'bg-red-100 text-red-800';
+            if (!isVerified) return 'bg-yellow-100 text-yellow-800';
+            return 'bg-green-100 text-green-800';
+        },
+
+        getStatusText(isActive, isVerified) {
+            if (!isActive) return 'Inactif';
+            if (!isVerified) return 'Non vérifié';
+            return 'Actif';
+        },
+
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('fr-FR');
+        },
+
+        formatPrice(price) {
+            return new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(price);
+        }
+    }));
+});
+</script>
+
+<div x-data="customersPage()" x-init="init()">
+    <!-- Le contenu est déjà dans le template -->
+</div>
+{% endblock %}

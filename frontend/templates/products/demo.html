@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Démo Interface E-commerce - StelleWorld{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Interface E-commerce StelleWorld</h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Une interface moderne inspirée d'Amazon avec filtres avancés, scroll infini et design responsive.
+        </p>
+    </div>
+
+    <!-- Aperçu de l'interface -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
+        <div class="relative">
+            <img src="/static/images/ecommerce-preview.jpg" alt="Aperçu interface e-commerce" 
+                 class="w-full h-64 object-cover"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            
+            <!-- Fallback si pas d'image -->
+            <div class="w-full h-64 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center" style="display: none;">
+                <div class="text-center text-white">
+                    <i class="fas fa-store text-6xl mb-4"></i>
+                    <h3 class="text-2xl font-semibold">Interface E-commerce</h3>
+                    <p class="text-lg">Moderne & Responsive</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-8">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Fonctionnalités principales</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-search text-blue-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-medium text-gray-900">Recherche avancée</h3>
+                        <p class="text-gray-600 text-sm">Barre de recherche intelligente avec suggestions</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-filter text-blue-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-medium text-gray-900">Filtres dynamiques</h3>
+                        <p class="text-gray-600 text-sm">Catégories, prix, marques, notes et disponibilité</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-th text-blue-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-medium text-gray-900">Grille responsive</h3>
+                        <p class="text-gray-600 text-sm">3-4 colonnes sur desktop, adaptée mobile</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-infinity text-blue-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-medium text-gray-900">Scroll infini</h3>
+                        <p class="text-gray-600 text-sm">Chargement automatique des produits</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-heart text-blue-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-medium text-gray-900">Favoris</h3>
+                        <p class="text-gray-600 text-sm">Sauvegarde locale des produits favoris</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-shopping-cart text-blue-500 text-xl mt-1"></i>
+                    <div>
+                        <h3 class="font-medium text-gray-900">Panier intelligent</h3>
+                        <p class="text-gray-600 text-sm">Ajout rapide avec persistance localStorage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Composants de l'interface -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-bars text-blue-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Barre de navigation</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-600">
+                <li>• Logo StelleWorld à gauche</li>
+                <li>• Barre de recherche centrée</li>
+                <li>• Icônes Panier, Favoris, Compte</li>
+                <li>• Menu responsive mobile</li>
+            </ul>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-sliders-h text-blue-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Sidebar filtres</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-600">
+                <li>• Catégories avec compteurs</li>
+                <li>• Slider de prix interactif</li>
+                <li>• Sélection de marques</li>
+                <li>• Filtres d'évaluation par étoiles</li>
+                <li>• Disponibilité en stock</li>
+            </ul>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-th-large text-blue-500 text-2xl mr-3"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Grille produits</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-600">
+                <li>• Cartes produits animées</li>
+                <li>• Images avec badges "Nouveau"</li>
+                <li>• Notation par étoiles</li>
+                <li>• Boutons Favoris et Panier</li>
+                <li>• Options tri et vue</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Technologies utilisées -->
+    <div class="bg-gray-50 rounded-xl p-8 mb-12">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6 text-center">Technologies utilisées</h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fab fa-html5 text-2xl text-blue-600"></i>
+                </div>
+                <h4 class="font-medium text-gray-900">HTML5</h4>
+                <p class="text-sm text-gray-600">Structure sémantique</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fab fa-css3-alt text-2xl text-cyan-600"></i>
+                </div>
+                <h4 class="font-medium text-gray-900">TailwindCSS</h4>
+                <p class="text-sm text-gray-600">Styles utilitaires</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fab fa-js-square text-2xl text-yellow-600"></i>
+                </div>
+                <h4 class="font-medium text-gray-900">JavaScript</h4>
+                <p class="text-sm text-gray-600">Interactions dynamiques</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-mobile-alt text-2xl text-green-600"></i>
+                </div>
+                <h4 class="font-medium text-gray-900">Responsive</h4>
+                <p class="text-sm text-gray-600">Mobile-first</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton d'accès -->
+    <div class="text-center">
+        <a href="/products/catalog" 
+           class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
+            <i class="fas fa-rocket mr-3 text-lg"></i>
+            Découvrir l'interface e-commerce
+            <i class="fas fa-arrow-right ml-3"></i>
+        </a>
+        
+        <p class="mt-4 text-sm text-gray-600">
+            Interface complète avec données de démonstration
+        </p>
+    </div>
+</div>
+{% endblock %}
