@@ -1,0 +1,131 @@
+<!-- Header moderne inspiré de bswbeautyca.com -->
+<header class="header-wrapper">
+    <!-- Bannière d'annonce -->
+    <div id="announcement-banner" class="announcement-banner">
+        <div class="announcement-content">
+            <p class="announcement-text">
+                💌 Bienvenue sur StelleWorld ! Découvrez nos nouveaux produits.
+            </p>
+            <button class="announcement-close" onclick="closeAnnouncement()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header principal -->
+    <div class="header-main">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="header-logo">
+                <a href="/">
+                    <span class="logo-text">StelleWorld</span>
+                </a>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="header-search">
+                <form action="/products/search" method="get" class="search-form">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        class="search-input" 
+                        placeholder="Rechercher un produit..."
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Icônes à droite -->
+            <div class="header-actions">
+                <!-- Compte utilisateur -->
+                <a href="/profile" class="header-icon" title="Mon compte">
+                    <i class="far fa-user"></i>
+                </a>
+
+                <!-- Panier -->
+                <a href="/cart" class="header-icon header-cart" title="Mon panier">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </a>
+
+                <!-- Instagram -->
+                <a href="https://instagram.com/stelleworld" target="_blank" class="header-icon" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+
+                <!-- Menu mobile toggle -->
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation principale -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/collections/new-arrivals" class="nav-link">NEW ARRIVALS</a>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/braid" class="nav-link">
+                        BRAID
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/braid/kanekalon" class="dropdown-item">Kanekalon Hair</a>
+                        <a href="/collections/braid/xpression" class="dropdown-item">X-pression Hair</a>
+                        <a href="/collections/braid/afro" class="dropdown-item">Afro Kinky</a>
+                    </div>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a href="/collections/hair-skin-care" class="nav-link">
+                        HAIR & SKIN CARE
+                        <i class="fas fa-chevron-down nav-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/collections/hair-care" class="dropdown-item">Hair Care</a>
+                        <a href="/collections/skin-care" class="dropdown-item">Skin Care</a>
+                        <a href="/collections/treatments" class="dropdown-item">Treatments</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="/appointments" class="nav-link">RENDEZ-VOUS</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/subscriptions" class="nav-link">ABONNEMENT</a>
+                </li>
+                <li class="nav-item nav-sale">
+                    <a href="/collections/sale" class="nav-link">SALE</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/contact" class="nav-link">CONTACT</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Menu mobile -->
+    <div id="mobile-nav" class="mobile-nav">
+        <div class="mobile-nav-header">
+            <span class="mobile-nav-title">Menu</span>
+            <button class="mobile-nav-close" onclick="toggleMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-nav-content">
+            <a href="/collections/new-arrivals" class="mobile-nav-item">NEW ARRIVALS</a>
+            <a href="/collections/braid" class="mobile-nav-item">BRAID</a>
+            <a href="/collections/hair-skin-care" class="mobile-nav-item">HAIR & SKIN CARE</a>
+            <a href="/appointments" class="mobile-nav-item">RENDEZ-VOUS</a>
+            <a href="/subscriptions" class="mobile-nav-item">ABONNEMENT</a>
+            <a href="/collections/sale" class="mobile-nav-item mobile-nav-sale">SALE</a>
+            <a href="/contact" class="mobile-nav-item">CONTACT</a>
+        </div>
+    </div>
+</header>
+

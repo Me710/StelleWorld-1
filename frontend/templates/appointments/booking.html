@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Rendez-vous - StelleWorld{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Styles pour la page de rendez-vous */
+.appointments-hero {
+    background: linear-gradient(135deg, #fce7f3 0%, #f3e7fc 100%);
+    padding: 4rem 0 3rem;
+    text-align: center;
+}
+
+.appointments-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.appointments-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.booking-container {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+}
+
+.booking-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.service-option {
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.service-option:hover {
+    border-color: #831843;
+    background-color: #fce7f3;
+}
+
+.service-option.selected {
+    border-color: #831843;
+    background-color: #fce7f3;
+}
+
+.service-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 0.5rem;
+}
+
+.service-description {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.service-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #831843;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #831843;
+    box-shadow: 0 0 0 3px rgba(131, 24, 67, 0.1);
+}
+
+.btn-book {
+    width: 100%;
+    padding: 1rem 2rem;
+    background-color: #831843;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-book:hover {
+    background-color: #9f1d52;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(131, 24, 67, 0.3);
+}
+
+@media (max-width: 768px) {
+    .appointments-title {
+        font-size: 2rem;
+    }
+    
+    .booking-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen">
+    <!-- Hero Section -->
+    <div class="appointments-hero">
+        <h1 class="appointments-title">Prendre Rendez-vous</h1>
+        <p class="appointments-subtitle">
+            Réservez votre consultation beauté avec nos experts
+        </p>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="booking-container">
+        <div class="booking-card">
+            <h2 class="text-2xl font-bold mb-4">Choisissez votre service</h2>
+            
+            <div class="service-option" onclick="selectService('consultation')">
+                <div class="service-title">Consultation Capillaire</div>
+                <div class="service-description">Analyse personnalisée de vos besoins capillaires (30 min)</div>
+                <div class="service-price">Gratuit</div>
+            </div>
+            
+            <div class="service-option" onclick="selectService('pose-perruque')">
+                <div class="service-title">Pose de Perruque</div>
+                <div class="service-description">Installation professionnelle de votre perruque (45 min)</div>
+                <div class="service-price">35€</div>
+            </div>
+            
+            <div class="service-option" onclick="selectService('pose-tresses')">
+                <div class="service-title">Pose de Tresses</div>
+                <div class="service-description">Réalisation de tresses professionnelles (2-4h)</div>
+                <div class="service-price">À partir de 80€</div>
+            </div>
+            
+            <div class="service-option" onclick="selectService('entretien')">
+                <div class="service-title">Entretien & Styling</div>
+                <div class="service-description">Entretien et coiffure de vos extensions (1h)</div>
+                <div class="service-price">50€</div>
+            </div>
+        </div>
+
+        <div class="booking-card">
+            <h2 class="text-2xl font-bold mb-4">Vos informations</h2>
+            
+            <form id="booking-form">
+                <input type="hidden" id="selected-service" name="service">
+                
+                <div class="form-group">
+                    <label class="form-label" for="name">Nom complet *</label>
+                    <input type="text" id="name" name="name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="email">Email *</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="phone">Téléphone *</label>
+                    <input type="tel" id="phone" name="phone" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="date">Date souhaitée *</label>
+                    <input type="date" id="date" name="date" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="time">Heure souhaitée *</label>
+                    <input type="time" id="time" name="time" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="notes">Notes / Demandes spéciales</label>
+                    <textarea id="notes" name="notes" class="form-input" rows="4" placeholder="Précisez vos besoins ou préférences..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-book">
+                    Confirmer le rendez-vous
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let selectedService = null;
+
+function selectService(service) {
+    // Retirer la sélection précédente
+    document.querySelectorAll('.service-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Sélectionner le nouveau service
+    event.currentTarget.classList.add('selected');
+    selectedService = service;
+    document.getElementById('selected-service').value = service;
+}
+
+// Gérer la soumission du formulaire
+document.getElementById('booking-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!selectedService) {
+        alert('Veuillez sélectionner un service');
+        return;
+    }
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    try {
+        const response = await fetch('/api/appointments/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            alert('Rendez-vous confirmé ! Nous vous contacterons pour confirmer la disponibilité.');
+            e.target.reset();
+            selectedService = null;
+            document.querySelectorAll('.service-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        } else {
+            throw new Error('Erreur lors de la réservation');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue. Veuillez réessayer.');
+    }
+});
+
+// Définir la date minimum à aujourd'hui
+document.getElementById('date').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}
+
