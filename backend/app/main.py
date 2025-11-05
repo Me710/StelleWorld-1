@@ -3,7 +3,7 @@ StelleWorld - Boutique en ligne interactive
 Point d'entrée principal de l'API FastAPI
 """
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -99,6 +99,11 @@ async def appointments_page(request: Request):
     """Page de réservation"""
     return templates.TemplateResponse("appointments/booking.html", {"request": request})
 
+@app.get("/subscriptions", response_class=HTMLResponse)
+async def subscriptions_page(request: Request):
+    """Page des abonnements"""
+    return templates.TemplateResponse("subscriptions/subscription.html", {"request": request})
+
 @app.get("/profile", response_class=HTMLResponse)
 async def profile_page(request: Request):
     """Page profil utilisateur"""
@@ -170,23 +175,51 @@ async def collections_page(request: Request):
     """Page principale des collections - affiche toutes les catégories"""
     return templates.TemplateResponse("collections.html", {"request": request})
 
-@app.get("/collections/{collection_name}", response_class=HTMLResponse)
-async def collection_page(request: Request, collection_name: str):
+@app.get("/collections/{collection_slug}", response_class=HTMLResponse)
+async def collection_page(request: Request, collection_slug: str):
     """Page de collection dynamique - affiche les produits d'une catégorie"""
-    return templates.TemplateResponse("products/catalog.html", {
-        "request": request,
-        "collection": collection_name
-    })
-
-@app.get("/locations", response_class=HTMLResponse)
-async def locations_page(request: Request):
-    """Page des emplacements/magasins"""
-    return templates.TemplateResponse("locations.html", {"request": request})
-
-@app.get("/sale-flyer", response_class=HTMLResponse)
-async def sale_flyer_page(request: Request):
-    """Page du prospectus de soldes"""
-    return templates.TemplateResponse("sale-flyer.html", {"request": request})
+    from app.core.database import get_db
+    from app.models.product import Category
+    
+    # Slugs désactivés (retirés du menu)
+    disabled_slugs = ['hair', 'beauty', 'tools', 'wigs']
+    
+    # Bloquer l'accès aux collections désactivées
+    if collection_slug in disabled_slugs:
+        raise HTTPException(status_code=404, detail="Cette collection n'est plus disponible")
+    
+    # Récupérer la session de base de données
+    db = next(get_db())
+    
+    try:
+        # Récupérer la catégorie par slug
+        category = db.query(Category).filter(
+            Category.slug == collection_slug,
+            Category.is_active == True
+        ).first()
+        
+        if category:
+            # Catégorie trouvée - utiliser les vraies données
+            return templates.TemplateResponse("products/collection.html", {
+                "request": request,
+                "category_id": category.id,
+                "category_slug": category.slug,
+                "category_name": category.name,
+                "category_description": category.description or f"Découvrez notre sélection de {category.name.lower()}"
+            })
+        else:
+            # Catégorie non trouvée - utiliser le slug comme fallback
+            # Cela permet aux liens de fonctionner même si la catégorie n'est pas encore en DB
+            category_name = collection_slug.replace('-', ' ').title()
+            return templates.TemplateResponse("products/collection.html", {
+                "request": request,
+                "category_id": None,
+                "category_slug": collection_slug,
+                "category_name": category_name,
+                "category_description": f"Découvrez notre sélection de {category_name.lower()}"
+            })
+    finally:
+        db.close()
 
 @app.get("/contact", response_class=HTMLResponse)
 async def contact_page(request: Request):
