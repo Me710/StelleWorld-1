@@ -5,5 +5,5 @@
   "/panier/page": "app/panier/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/products/page": "app/admin/products/page.js",
-  "/admin/hero/page": "app/admin/hero/page.js"
+  "/admin/orders/page": "app/admin/orders/page.js"
 }
