@@ -5,7 +5,7 @@ from app.models.product import Product, Category, ProductVariant
 from app.models.order import Order, OrderItem, OrderStatus, PaymentStatus
 from app.models.subscription import Subscription, SubscriptionItem, SubscriptionInvoice
 from app.models.appointment import Appointment
-from app.models.chat import Chat, ChatMessage
+from app.models.chat import ChatConversation, ChatMessage, ChatNotification
 from app.models.supplier import Supplier, SupplierInvoice
 from app.models.invoice import CustomerInvoice, InvoiceStatus
 from app.models.hero_slider import HeroSlide, SiteSettings
@@ -24,8 +24,9 @@ __all__ = [
     "SubscriptionItem",
     "SubscriptionInvoice",
     "Appointment",
-    "Chat",
+    "ChatConversation",
     "ChatMessage",
+    "ChatNotification",
     "Supplier",
     "SupplierInvoice",
     "CustomerInvoice",
