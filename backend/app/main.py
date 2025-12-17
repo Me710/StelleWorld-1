@@ -43,11 +43,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Montage des fichiers statiques
-app.mount("/static", StaticFiles(directory="../frontend/static"), name="static")
+# Health check
+@app.get("/health")
+async def health_check():
+    """Vérification de l'état de l'API"""
+    return {"status": "healthy", "service": "StelleWorld API"}
 
-# Configuration des templates
-templates = Jinja2Templates(directory="../frontend/templates")
+@app.get("/api/health")
+async def api_health_check():
+    """Vérification de l'état de l'API"""
+    return {"status": "healthy", "service": "StelleWorld API", "version": "2.0.0", "database": "PostgreSQL"}
 
 # Routes API
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
