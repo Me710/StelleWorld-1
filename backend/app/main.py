@@ -59,6 +59,9 @@ app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(banner.router, tags=["Banners"])
+app.include_router(hero.router, prefix="/api", tags=["Hero Slider"])
+app.include_router(suppliers.router, prefix="/api/suppliers", tags=["Suppliers"])
+app.include_router(invoices.router, prefix="/api/invoices", tags=["Invoices"])
 
 # WebSocket pour chat temps réel
 app.include_router(chat_router, prefix="/ws")
