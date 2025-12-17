@@ -24,7 +24,23 @@ export default function FeaturedProducts() {
     const loadProducts = async () => {
       try {
         const data = await getFeaturedProducts()
-        setProducts(data.products || [])
+        if (data.featured_products && data.featured_products.length > 0) {
+          // Convertir le format API vers le format attendu par ProductCard
+          const formattedProducts = data.featured_products.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            price: p.price,
+            compare_at_price: p.compare_at_price,
+            main_image_url: p.main_image_url,
+            short_description: p.short_description,
+            stock_quantity: p.is_in_stock ? 10 : 0,
+            is_featured: true
+          }))
+          setProducts(formattedProducts)
+        } else {
+          setProducts(demoProducts)
+        }
       } catch (error) {
         console.error('Erreur chargement produits:', error)
         // Utiliser des produits de démonstration
