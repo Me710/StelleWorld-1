@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules'
-import { getWhatsAppContactLink } from '@/lib/api'
+import axios from 'axios'
 
 // Import Swiper styles
 import 'swiper/css'
@@ -25,53 +25,21 @@ export default function HeroSlider() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Pour l'instant, utilisons des slides par défaut
-    // Plus tard, on chargera depuis l'API
-    const defaultSlides: HeroSlide[] = [
-      {
-        id: 1,
-        title: 'Découvrez notre collection de mèches',
-        subtitle: 'Qualité premium pour sublimer votre beauté',
-        image_url: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=1920&h=800&fit=crop',
-        cta_text: 'Découvrir',
-        cta_link: '/categories/meches',
-      },
-      {
-        id: 2,
-        title: 'Soins de la peau professionnels',
-        subtitle: 'Des produits sélectionnés pour votre peau',
-        image_url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1920&h=800&fit=crop',
-        cta_text: 'Voir nos soins',
-        cta_link: '/categories/skin-care',
-      },
-      {
-        id: 3,
-        title: 'Réservez votre rendez-vous',
-        subtitle: 'Service personnalisé par nos experts',
-        image_url: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&h=800&fit=crop',
-        cta_text: 'Prendre RDV',
-        cta_link: '/categories/rendez-vous',
-      },
-      {
-        id: 4,
-        title: 'Offres spéciales du mois',
-        subtitle: 'Jusqu\'à -50% sur une sélection de produits',
-        image_url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1920&h=800&fit=crop',
-        cta_text: 'Voir les promos',
-        cta_link: '/products?filter=promo',
-      },
-      {
-        id: 5,
-        title: 'Nouveautés 2024',
-        subtitle: 'Découvrez les dernières tendances beauté',
-        image_url: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=1920&h=800&fit=crop',
-        cta_text: 'Nouveautés',
-        cta_link: '/products?filter=new',
-      },
-    ]
+    const loadSlides = async () => {
+      try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
+        const { data } = await axios.get(`${API_URL}/api/hero-slides`)
+        setSlides(data.slides || [])
+      } catch (error) {
+        console.error('Erreur chargement slides:', error)
+        // Fallback vers slides par défaut
+        setSlides(defaultSlides)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-    setSlides(defaultSlides)
-    setLoading(false)
+    loadSlides()
   }, [])
 
   if (loading) {
@@ -141,3 +109,23 @@ export default function HeroSlider() {
     </section>
   )
 }
+
+// Slides par défaut en cas d'erreur API
+const defaultSlides: HeroSlide[] = [
+  {
+    id: 1,
+    title: 'Découvrez notre collection de mèches',
+    subtitle: 'Qualité premium pour sublimer votre beauté',
+    image_url: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=1920&h=800&fit=crop',
+    cta_text: 'Découvrir',
+    cta_link: '/categories/meches',
+  },
+  {
+    id: 2,
+    title: 'Soins de la peau professionnels',
+    subtitle: 'Des produits sélectionnés pour votre peau',
+    image_url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1920&h=800&fit=crop',
+    cta_text: 'Voir nos soins',
+    cta_link: '/categories/skin-care',
+  },
+]
