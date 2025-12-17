@@ -1,4 +1,7 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/(public)/products/page": "app/(public)/products/page.js",
+  "/(public)/categories/[slug]/page": "app/(public)/categories/[slug]/page.js",
+  "/(public)/panier/page": "app/(public)/panier/page.js",
   "/(public)/page": "app/(public)/page.js"
 }
