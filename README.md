@@ -1,337 +1,218 @@
-# 🌟 StelleWorld - Boutique en ligne interactive
+# 🌟 StelleWorld - Boutique en Ligne Interactive
 
-## 📋 Vue d'ensemble
+> **Version 2.0** - Refactorisation complète avec PostgreSQL Neon + Next.js 14
 
-StelleWorld est une boutique en ligne moderne et interactive qui offre une expérience d'achat fluide inspirée des meilleures plateformes e-commerce. Le projet combine vente de produits, services sur rendez-vous, abonnements récurrents et interaction temps réel avec les clients.
-
-## 🎯 Objectifs du projet
-
-- **Expérience utilisateur moderne** : Navigation fluide et intuitive
-- **Multi-formats de vente** : Produits, services, abonnements
-- **Interaction temps réel** : Chat direct avec le commerçant
-- **Analytics intelligentes** : Best-sellers et recommandations automatiques
-- **Contact WhatsApp** : Collecte optionnelle pour fidélisation
-
-## 🏗️ Architecture technique
-
-### Stack technologique
-
-- **Backend** : Python FastAPI
-- **Base de données** : PostgreSQL avec SQLAlchemy + Alembic
-- **Frontend** : HTML5, CSS3 (Tailwind), JavaScript + HTMX
-- **Temps réel** : WebSocket (FastAPI)
-- **Paiements** : Stripe (paiements et abonnements)
-- **Notifications** : Bot Telegram
-- **Tâches asynchrones** : Celery + Redis
-- **Conteneurisation** : Docker + Docker Compose
-- **Reverse Proxy** : Nginx
-
-### Structure du projet
-
-```
-StelleWorld/
-├── backend/                    # API FastAPI
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py            # Point d'entrée FastAPI
-│   │   ├── core/              # Configuration et sécurité
-│   │   │   ├── config.py
-│   │   │   ├── security.py
-│   │   │   └── database.py
-│   │   ├── models/            # Modèles SQLAlchemy
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py
-│   │   │   ├── product.py
-│   │   │   ├── order.py
-│   │   │   ├── subscription.py
-│   │   │   ├── appointment.py
-│   │   │   └── chat.py
-│   │   ├── schemas/           # Schémas Pydantic
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py
-│   │   │   ├── product.py
-│   │   │   ├── order.py
-│   │   │   └── chat.py
-│   │   ├── api/               # Endpoints API
-│   │   │   ├── __init__.py
-│   │   │   ├── auth.py
-│   │   │   ├── products.py
-│   │   │   ├── orders.py
-│   │   │   ├── subscriptions.py
-│   │   │   ├── appointments.py
-│   │   │   ├── chat.py
-│   │   │   └── analytics.py
-│   │   ├── services/          # Logique métier
-│   │   │   ├── __init__.py
-│   │   │   ├── auth_service.py
-│   │   │   ├── product_service.py
-│   │   │   ├── order_service.py
-│   │   │   ├── stripe_service.py
-│   │   │   ├── chat_service.py
-│   │   │   └── notification_service.py
-│   │   ├── utils/             # Utilitaires
-│   │   │   ├── __init__.py
-│   │   │   ├── dependencies.py
-│   │   │   └── helpers.py
-│   │   └── websocket/         # WebSocket pour chat
-│   │       ├── __init__.py
-│   │       └── chat_handler.py
-│   ├── alembic/               # Migrations DB
-│   ├── tests/                 # Tests unitaires
-│   ├── requirements.txt
-│   └── Dockerfile
-├── frontend/                   # Interface utilisateur
-│   ├── static/
-│   │   ├── css/
-│   │   │   ├── main.css
-│   │   │   └── components/
-│   │   ├── js/
-│   │   │   ├── main.js
-│   │   │   ├── chat.js
-│   │   │   ├── cart.js test
-│   │   │   └── components/
-│   │   └── images/
-│   ├── templates/
-│   │   ├── base.html
-│   │   ├── index.html
-│   │   ├── products/
-│   │   │   ├── catalog.html
-│   │   │   └── detail.html
-│   │   ├── cart/
-│   │   │   ├── cart.html
-│   │   │   └── checkout.html
-│   │   ├── user/
-│   │   │   ├── profile.html
-│   │   │   └── subscriptions.html
-│   │   ├── appointments/
-│   │   │   └── booking.html
-│   │   ├── chat/
-│   │   │   └── chat.html
-│   │   └── admin/
-│   │       ├── dashboard.html
-│   │       ├── products.html
-│   │       └── orders.html
-│   └── Dockerfile
-├── worker/                     # Celery worker
-│   ├── tasks/
-│   │   ├── __init__.py
-│   │   ├── analytics.py
-│   │   ├── notifications.py
-│   │   └── stripe_webhooks.py
-│   ├── celery_app.py
-│   └── Dockerfile
-├── nginx/                      # Configuration Nginx
-│   ├── nginx.conf
-│   └── Dockerfile
-├── docker-compose.yml          # Orchestration des services
-├── docker-compose.prod.yml     # Configuration production
-├── .env.example               # Variables d'environnement
-├── .gitignore
-└── README.md
-```
-
-## 🎨 Fonctionnalités principales
-
-### 🛍️ Catalogue & E-commerce
-- **Catalogue produits** filtrable et recherchable
-- **Pages produits** détaillées avec photos, descriptions, stock
-- **Panier d'achat** persistant et optimisé
-- **Paiements sécurisés** via Stripe
-- **Gestion du stock** en temps réel
-
-### 📅 Services & Rendez-vous
-- **Réservation en ligne** via calendrier interactif
-- **Gestion des créneaux** avec disponibilités temps réel
-- **Confirmations automatiques** par email/notification
-- **Statuts de RDV** (en attente, confirmé, annulé)
-
-### 💳 Abonnements & Récurrence
-- **Formules d'abonnement** (hebdomadaire, mensuel, annuel)
-- **Gestion des renouvellements** automatiques
-- **Interface client** pour gérer ses abonnements
-- **Webhooks Stripe** pour synchronisation
-
-### 💬 Chat & Support
-- **Chat temps réel** type Alibaba
-- **Notifications instantanées** sur mobile du commerçant
-- **Historique des conversations** sauvegardé
-- **Interface admin** pour gérer les discussions
-
-### 📊 Analytics & Recommandations
-- **Best Sellers** mis à jour automatiquement
-- **Produits souvent achetés ensemble**
-- **Tableaux de bord** pour l'admin
-- **Rapports de vente** et statistiques
-
-### 📱 Contact WhatsApp
-- **Collecte optionnelle** avec consentement RGPD
-- **Liens directs** vers WhatsApp Business
-- **Messages pré-remplis** pour faciliter le contact
-
-## 🚀 Installation et déploiement
-
-### Prérequis
-- Docker et Docker Compose
-- Python 3.9+
-- Node.js 16+ (pour le build frontend)
-- Compte Stripe (clés API)
-- Bot Telegram (token)
-
-### Installation locale
-
-1. **Cloner le projet**
-```bash
-git clone https://github.com/Me710/StelleWorld.git
-cd StelleWorld
-```
-
-2. **Configuration des variables d'environnement**
-```bash
-cp .env.example .env
-# Éditer .env avec vos clés API
-```
-
-3. **Lancement avec Docker**
-```bash
-docker-compose up -d
-```
-
-4. **Migrations de base de données**
-```bash
-docker-compose exec backend alembic upgrade head
-```
-
-5. **Accès à l'application**
-- Frontend : http://localhost:8000
-- API : http://localhost:8000
-- Admin : http://localhost:8000/admin
-
-### Déploiement production
-
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-## 🔧 Configuration
-
-### Variables d'environnement principales
-
-```env
-# Base de données
-DATABASE_URL=postgresql://user:password@db:5432/stelleworld
-
-# Stripe
-STRIPE_PUBLIC_KEY=pk_live_...
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-
-# JWT
-SECRET_KEY=your-secret-key
-ALGORITHM=HS256
-
-# Telegram
-TELEGRAM_BOT_TOKEN=your-bot-token
-TELEGRAM_CHAT_ID=your-chat-id
-
-# Redis
-REDIS_URL=redis://redis:6379/0
-
-# Email (optionnel)
-SMTP_HOST=smtp.gmail.com
-SMTP_USER=your-email@gmail.com
-SMTP_PASSWORD=your-app-password
-```
-
-## 📱 Parcours utilisateur
-
-### 🛒 Achat produit
-1. **Navigation** → Catalogue et recherche
-2. **Sélection** → Page produit avec détails
-3. **Panier** → Ajout et modification quantités
-4. **Checkout** → Informations client et paiement
-5. **Confirmation** → Email et suivi commande
-
-### 📅 Réservation service
-1. **Services** → Liste des services disponibles
-2. **Calendrier** → Sélection date et créneau
-3. **Informations** → Coordonnées client
-4. **Confirmation** → RDV confirmé avec rappels
-
-### 💳 Abonnement
-1. **Formules** → Choix de l'abonnement
-2. **Paiement** → Configuration récurrente Stripe
-3. **Activation** → Accès immédiat aux services
-4. **Gestion** → Interface client pour modifications
-
-### 💬 Support chat
-1. **Démarrage** → Clic sur bouton chat
-2. **Conversation** → Messages temps réel
-3. **Notification** → Alert commerçant via Telegram
-4. **Historique** → Sauvegarde automatique
-
-## 🔐 Sécurité & RGPD
-
-- **HTTPS** obligatoire en production
-- **JWT tokens** pour l'authentification
-- **Hashage bcrypt** pour les mots de passe
-- **Validation** stricte des inputs (Pydantic)
-- **Consentement explicite** pour WhatsApp
-- **Droit à l'oubli** et export des données
-
-## 🧪 Tests
-
-```bash
-# Tests backend
-docker-compose exec backend pytest
-
-# Tests frontend
-npm test
-
-# Tests d'intégration
-pytest tests/integration/
-```
-
-## 📖 API Documentation
-
-L'API est documentée automatiquement via FastAPI :
-- Swagger UI : http://localhost:8000/docs
-- ReDoc : http://localhost:8000/redoc
-
-## 🎯 Roadmap
-
-### Phase 1 (MVP - 3 semaines)
-- ✅ Architecture de base
-- ✅ Catalogue produits
-- ✅ Paiements Stripe
-- ✅ Chat temps réel
-- ✅ Back-office simple
-
-### Phase 2 (Amélioration)
-- 📱 Application mobile (React Native)
-- 🔍 Recherche avancée (Elasticsearch)
-- 📧 Email marketing
-- 🎨 Thèmes personnalisables
-- 📊 Analytics avancées
-
-### Phase 3 (Scale)
-- 🌍 Multi-langues
-- 💰 Multi-devises
-- 🚚 Gestion livraisons
-- 👥 Programme fidélité
-- 🤖 IA recommandations
-
-## 📞 Support
-
-Pour toute question ou assistance :
-- 📧 Email : support@stelleworld.com
-- 💬 Chat : Directement sur le site
-- 📚 Documentation : [Wiki du projet]
-- 🐛 Issues : [GitHub Issues]
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Plateforme e-commerce moderne avec intégration WhatsApp, gestion de stock en temps réel, et dashboard administrateur complet.
 
 ---
 
-**Développé avec ❤️ pour offrir la meilleure expérience e-commerce**
+## ✨ Fonctionnalités
+
+### Front-Office
+- 🛍️ **Catalogue produits** avec filtres latéraux (catégories, prix, disponibilité)
+- 🎨 **Hero slider** dynamique (5 slides personnalisables)
+- 📱 **Double intégration WhatsApp**:
+  - Mode 1: Panier → Message pré-rempli avec commande
+  - Mode 2: Bouton floating contact direct
+- 🛒 **Panier intelligent** avec persistance locale
+- 📄 **Génération automatique** de commande + facture lors de la validation WhatsApp
+- 📊 **Bannière promo** personnalisable
+- 💳 **Devise CAD** (Dollar canadien)
+- 📱 **Design responsive** mobile-first (zoom 140%)
+
+### Back-Office (Admin)
+- 📊 **Dashboard** avec statistiques en temps réel
+- 📦 **Gestion produits** (CRUD complet - 45 produits)
+- 🖼️ **Gestion hero slider** (5 slides)
+- 📋 **Gestion commandes** WhatsApp avec export factures
+- 👥 **Gestion fournisseurs**
+- 🧾 **Gestion factures** (clients + fournisseurs)
+- 📈 **Statistiques** ventes et stock
+
+---
+
+## 🔧 Stack Technique
+
+- **Backend**: FastAPI + SQLAlchemy + PostgreSQL Neon
+- **Frontend**: Next.js 14 + TypeScript + TailwindCSS
+- **State**: Zustand (panier persistant)
+- **WhatsApp**: Intégration double mode (+15813081802)
+
+---
+
+## 🚀 Démarrage Rapide
+
+### 1. Backend
+
+```bash
+cd backend
+
+# Créer les tables PostgreSQL
+python test_db_connection.py
+
+# Charger les données (45 produits)
+python load_all_fixtures.py
+
+# Démarrer l'API
+uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+```
+
+✅ Backend: http://localhost:8001
+✅ API Docs: http://localhost:8001/api/docs
+
+### 2. Frontend
+
+```bash
+cd frontend
+
+# Installer dépendances
+yarn install
+
+# Démarrer Next.js
+yarn dev
+```
+
+✅ Site: http://localhost:3000
+✅ Admin: http://localhost:3000/admin
+
+---
+
+## ⚙️ Configuration
+
+### Backend (.env)
+
+```env
+DATABASE_URL=postgresql://user:password@host/neondb?sslmode=require
+WHATSAPP_BUSINESS_NUMBER=+15813081802
+SECRET_KEY=votre-secret-key
+```
+
+### Frontend (.env.local)
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8001/api
+NEXT_PUBLIC_WHATSAPP_NUMBER=+15813081802
+```
+
+---
+
+## 👤 Accès Admin
+
+```
+URL: http://localhost:3000/admin
+Email: admin@stelleworld.com
+Password: admin123
+```
+
+⚠️ **Changez le mot de passe en production !**
+
+---
+
+## 🗄️ Données de Démonstration
+
+### Produits (45)
+- **Mèches** (9): 89.99$ à 179.99$ CAD
+- **Skin Care** (36): 12.99$ à 159.99$ CAD
+
+### Catégories
+1. **Mèches** - Qualité premium (Brésiliennes, Indiennes, Péruviennes)
+2. **Skin Care** - Soins professionnels
+
+### Hero Slides (5)
+1. Collection mèches
+2. Soins professionnels
+3. Rendez-vous
+4. Offres spéciales
+5. Nouveautés
+
+---
+
+## 📱 WhatsApp - Workflow Automatisé
+
+```
+1. Client ajoute produits au panier
+2. Clic "Commander via WhatsApp"
+3. Backend crée:
+   ✅ Commande (WA-20251217-XXXX)
+   ✅ Facture (INV-20251217-XXX)
+   ✅ Décrémente stock
+4. Frontend:
+   ✅ Ouvre WhatsApp (message pré-rempli)
+   ✅ Télécharge facture HTML
+   ✅ Vide panier
+5. Commerçant reçoit:
+   ✅ Message WhatsApp client
+   ✅ Commande dans /admin/orders
+   ✅ Facture exportable
+```
+
+---
+
+## 🛠️ Scripts Utiles
+
+```bash
+# Backend - Créer admin user
+cd backend
+python -c "from app.core.security import get_password_hash; print(get_password_hash('nouveau_mdp'))"
+
+# Backend - Reset database
+python test_db_connection.py && python load_all_fixtures.py
+
+# Frontend - Rebuild
+cd frontend
+rm -rf .next && yarn build
+
+# Frontend - Clear cache
+rm -rf .next/cache
+```
+
+---
+
+## 📊 Statistiques Base de Données
+
+```bash
+# Vérifier nombre de produits
+python -c "
+from app.core.database import SessionLocal
+from app.models.product import Product
+db = SessionLocal()
+print(f'Produits: {db.query(Product).count()}')
+db.close()
+"
+```
+
+---
+
+## 🎯 Fonctionnalités Clés
+
+✅ **45 produits** en base PostgreSQL Neon
+✅ **Double WhatsApp**: Panier + Contact direct
+✅ **Commande auto**: Création + Facture + Export
+✅ **Stock en temps réel**: Décrémentation automatique
+✅ **Admin complet**: Dashboard + CRUD + Stats
+✅ **Filtres avancés**: Catégories + Prix + Disponibilité
+✅ **Design moderne**: Images grandes + Boutons fixes
+✅ **Bannière promo**: Personnalisable par admin
+✅ **Devise CAD**: Dollar canadien partout
+✅ **Zoom 140%**: Meilleure lisibilité
+
+---
+
+## 🏆 Architecture
+
+- **PostgreSQL Neon**: 22 tables normalisées
+- **FastAPI**: 16 endpoints REST
+- **Next.js 14**: App Router + Server Components
+- **TailwindCSS**: Design system cohérent
+- **Zustand**: State management panier
+- **Swiper**: Slider homepage
+
+---
+
+## 📞 Contact
+
+**WhatsApp Business**: +1 581 308 1802
+
+---
+
+**Développé avec ❤️ pour StelleWorld - Votre destination beauté** 🌟

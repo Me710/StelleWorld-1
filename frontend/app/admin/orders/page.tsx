@@ -34,7 +34,7 @@ export default function AdminOrdersPage() {
                       {order.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 font-semibold">{order.total_amount.toFixed(2)}€</td>
+                  <td className="px-6 py-4 font-semibold">{order.total_amount.toFixed(2)} $ CAD</td>
                   <td className="px-6 py-4">{order.total_items} articles</td>
                 </tr>
               ))}

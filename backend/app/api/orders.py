@@ -17,6 +17,143 @@ from app.models.user import User
 router = APIRouter()
 
 
+@router.post("/whatsapp")
+async def create_whatsapp_order(
+    cart_items: List[dict],  # [{"id": 1, "name": "...", "price": 149.99, "quantity": 2}, ...]
+    customer_info: dict = None,  # {"name": "...", "email": "...", "phone": "..."}
+    db: Session = Depends(get_db)
+) -> Any:
+    """
+    Créer une commande WhatsApp (sans authentification)
+    + Génération automatique de facture client
+    """
+    
+    if not cart_items:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Le panier ne peut pas être vide"
+        )
+    
+    # Créer ou récupérer l'utilisateur guest
+    customer_email = customer_info.get("email", "guest@stelleworld.com") if customer_info else "guest@stelleworld.com"
+    customer_name = customer_info.get("name", "Client WhatsApp") if customer_info else "Client WhatsApp"
+    customer_phone = customer_info.get("phone", "") if customer_info else ""
+    
+    user = db.query(User).filter(User.email == customer_email).first()
+    if not user:
+        from app.core.security import get_password_hash
+        user = User(
+            email=customer_email,
+            first_name=customer_name.split()[0] if customer_name else "Client",
+            last_name=customer_name.split()[-1] if len(customer_name.split()) > 1 else "WhatsApp",
+            phone=customer_phone,
+            hashed_password=get_password_hash("whatsapp_guest"),
+            is_active=True,
+            country="Canada"
+        )
+        db.add(user)
+        db.flush()
+    
+    # Calculer les totaux
+    subtotal = sum(item["price"] * item["quantity"] for item in cart_items)
+    tax_amount = subtotal * 0.15  # TPS/TVQ Québec
+    shipping_amount = 0 if subtotal >= 100 else 9.99
+    total_amount = subtotal + tax_amount + shipping_amount
+    
+    # Générer numéro de commande
+    order_number = f"WA-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
+    
+    # Créer la commande
+    order = Order(
+        order_number=order_number,
+        user_id=user.id,
+        status=OrderStatus.PENDING,
+        payment_status=PaymentStatus.PENDING,
+        subtotal=subtotal,
+        tax_amount=tax_amount,
+        shipping_amount=shipping_amount,
+        total_amount=total_amount,
+        shipping_first_name=user.first_name,
+        shipping_last_name=user.last_name,
+        shipping_email=user.email,
+        shipping_phone=user.phone or customer_phone,
+        shipping_address_line1="À définir via WhatsApp",
+        shipping_city="Montréal",
+        shipping_postal_code="H0H 0H0",
+        shipping_country="Canada",
+        billing_first_name=user.first_name,
+        billing_last_name=user.last_name,
+        billing_email=user.email,
+        billing_address_line1="À définir via WhatsApp",
+        billing_city="Montréal",
+        billing_postal_code="H0H 0H0",
+        billing_country="Canada",
+        notes="Commande créée via WhatsApp"
+    )
+    
+    db.add(order)
+    db.flush()
+    
+    # Créer les articles
+    for item in cart_items:
+        order_item = OrderItem(
+            order_id=order.id,
+            product_id=item.get("id"),
+            product_name=item["name"],
+            product_description=item.get("short_description", ""),
+            product_image_url=item.get("image", ""),
+            quantity=item["quantity"],
+            unit_price=item["price"],
+            total_price=item["price"] * item["quantity"]
+        )
+        db.add(order_item)
+        
+        # Décrémenter le stock si produit existe
+        product = db.query(Product).filter(Product.id == item.get("id")).first()
+        if product and product.track_inventory:
+            product.stock_quantity -= item["quantity"]
+            if product.stock_quantity < 0:
+                product.stock_quantity = 0
+    
+    db.commit()
+    db.refresh(order)
+    
+    # Créer la facture client automatiquement
+    from app.models.invoice import CustomerInvoice, InvoiceStatus
+    
+    invoice_number = f"INV-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
+    
+    invoice = CustomerInvoice(
+        invoice_number=invoice_number,
+        order_id=order.id,
+        user_id=user.id,
+        subtotal=subtotal,
+        tax_amount=tax_amount,
+        discount_amount=0,
+        total_amount=total_amount,
+        status=InvoiceStatus.DRAFT,
+        is_paid=False,
+        payment_method="whatsapp",
+        invoice_date=datetime.utcnow(),
+        notes=f"Facture pour commande WhatsApp {order_number}"
+    )
+    
+    db.add(invoice)
+    db.commit()
+    db.refresh(invoice)
+    
+    return {
+        "success": True,
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "invoice_id": invoice.id,
+        "invoice_number": invoice.invoice_number,
+        "total_amount": total_amount,
+        "message": "Commande et facture créées avec succès"
+    }
+
+
+
 @router.post("/")
 async def create_order(
     items: List[dict],  # [{"product_id": 1, "quantity": 2}, ...]
@@ -237,6 +374,111 @@ async def get_order(
         "shipped_at": order.shipped_at,
         "delivered_at": order.delivered_at
     }
+
+
+@router.get("/{order_id}/invoice/pdf")
+async def download_invoice_pdf(
+    order_id: int,
+    db: Session = Depends(get_db)
+) -> Any:
+    """Télécharger la facture en PDF"""
+    from fastapi.responses import Response
+    from app.models.invoice import CustomerInvoice
+    
+    # Récupérer la commande et la facture
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Commande non trouvée")
+    
+    invoice = db.query(CustomerInvoice).filter(CustomerInvoice.order_id == order_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Facture non trouvée")
+    
+    # Générer le contenu de la facture (simple HTML pour l'instant)
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Facture {invoice.invoice_number}</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; padding: 40px; }}
+            .header {{ text-align: center; margin-bottom: 40px; }}
+            .invoice-info {{ margin-bottom: 30px; }}
+            table {{ width: 100%; border-collapse: collapse; }}
+            th, td {{ border: 1px solid #ddd; padding: 12px; text-align: left; }}
+            th {{ background-color: #ec4899; color: white; }}
+            .total {{ font-size: 1.2em; font-weight: bold; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>STELLEWORLD</h1>
+            <h2>Facture {invoice.invoice_number}</h2>
+        </div>
+        
+        <div class="invoice-info">
+            <p><strong>Date:</strong> {invoice.invoice_date.strftime('%d/%m/%Y')}</p>
+            <p><strong>Commande:</strong> {order.order_number}</p>
+            <p><strong>Client:</strong> {order.user.full_name}</p>
+            <p><strong>Email:</strong> {order.user.email}</p>
+            {f'<p><strong>Téléphone:</strong> {order.shipping_phone}</p>' if order.shipping_phone else ''}
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {''.join([f'''
+                <tr>
+                    <td>{item.product_name}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.unit_price:.2f}$ CAD</td>
+                    <td>{item.total_price:.2f}$ CAD</td>
+                </tr>
+                ''' for item in order.items])}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Sous-total:</strong></td>
+                    <td>{order.subtotal:.2f}$ CAD</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Taxes (15%):</strong></td>
+                    <td>{order.tax_amount:.2f}$ CAD</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Livraison:</strong></td>
+                    <td>{order.shipping_amount:.2f}$ CAD</td>
+                </tr>
+                <tr class="total">
+                    <td colspan="3" style="text-align: right;">TOTAL:</td>
+                    <td>{order.total_amount:.2f}$ CAD</td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div style="margin-top: 40px; text-align: center; color: #666;">
+            <p>Merci pour votre commande !</p>
+            <p>Pour toute question, contactez-nous au +15813081802</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return Response(
+        content=html_content,
+        media_type="text/html",
+        headers={
+            "Content-Disposition": f'attachment; filename="facture_{invoice.invoice_number}.html"'
+        }
+    )
 
 
 # Endpoints d'administration

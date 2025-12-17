@@ -16,6 +16,10 @@
   }
 }
 
+html {
+  zoom: 1.4;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: white;

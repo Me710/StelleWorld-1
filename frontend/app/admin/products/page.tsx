@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { FiSearch } from 'react-icons/fi'
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([])
@@ -63,7 +63,7 @@ export default function AdminProductsPage() {
                         <div className="font-semibold">{product.name}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-semibold">{product.price.toFixed(2)}€</td>
+                    <td className="px-6 py-4 font-semibold">{product.price.toFixed(2)} $</td>
                     <td className="px-6 py-4">{product.stock_quantity} unités</td>
                     <td className="px-6 py-4">{product.sales_count || 0} ventes</td>
                   </tr>
