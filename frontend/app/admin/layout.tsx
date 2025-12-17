@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FiHome, FiPackage, FiShoppingCart, FiImage, FiUsers, FiFileText, FiSettings, FiLogOut } from 'react-icons/fi'
+import { ReactNode } from 'react'
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+interface AdminLayoutProps {
+  children: ReactNode
+}
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname()
 
   const navItems = [
@@ -28,37 +29,37 @@ export default function AdminLayout({
   }
 
   return (
-    <div className=\"min-h-screen bg-gray-100\">
+    <div className="min-h-screen bg-gray-100">
       {/* Top Bar */}
-      <div className=\"bg-white shadow-sm border-b\">
-        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\">
-          <div className=\"flex justify-between items-center h-16\">
-            <div className=\"flex items-center space-x-3\">
-              <Link href=\"/\" className=\"text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent\">
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
                 StelleWorld
               </Link>
-              <span className=\"text-sm text-gray-500\">Admin</span>
+              <span className="text-sm text-gray-500">Admin</span>
             </div>
-            <div className=\"flex items-center space-x-4\">
+            <div className="flex items-center space-x-4">
               <Link
-                href=\"/\"
-                className=\"text-gray-600 hover:text-gray-900 text-sm font-medium\"
+                href="/"
+                className="text-gray-600 hover:text-gray-900 text-sm font-medium"
               >
                 Voir le site
               </Link>
-              <button className=\"text-red-600 hover:text-red-800 flex items-center space-x-2\">
-                <FiLogOut className=\"w-5 h-5\" />
-                <span className=\"text-sm font-medium\">Déconnexion</span>
+              <button className="text-red-600 hover:text-red-800 flex items-center space-x-2">
+                <FiLogOut className="w-5 h-5" />
+                <span className="text-sm font-medium">Déconnexion</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className=\"flex\">
+      <div className="flex">
         {/* Sidebar */}
-        <aside className=\"w-64 bg-white min-h-screen shadow-sm\">
-          <nav className=\"p-4 space-y-2\">
+        <aside className="w-64 bg-white min-h-screen shadow-sm">
+          <nav className="p-4 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -69,7 +70,7 @@ export default function AdminLayout({
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                <item.icon className=\"w-5 h-5\" />
+                <item.icon className="w-5 h-5" />
                 <span>{item.name}</span>
               </Link>
             ))}
@@ -77,7 +78,7 @@ export default function AdminLayout({
         </aside>
 
         {/* Main Content */}
-        <main className=\"flex-1\">
+        <main className="flex-1">
           {children}
         </main>
       </div>
