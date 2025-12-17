@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules'
-import axios from 'axios'
+import { getHeroSlides } from '@/lib/api'
 
 // Import Swiper styles
 import 'swiper/css'
@@ -27,9 +27,8 @@ export default function HeroSlider() {
   useEffect(() => {
     const loadSlides = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
-        const { data } = await axios.get(`${API_URL}/api/hero-slides`)
-        setSlides(data.slides || [])
+        const data = await getHeroSlides()
+        setSlides(data.slides || defaultSlides)
       } catch (error) {
         console.error('Erreur chargement slides:', error)
         // Fallback vers slides par défaut
