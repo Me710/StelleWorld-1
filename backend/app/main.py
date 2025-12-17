@@ -13,13 +13,13 @@ from fastapi.responses import HTMLResponse
 try:
     from .core.config import settings
     from .core.database import engine, Base
-    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner
+    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices
     from .websocket.chat_handler import router as chat_router
 except ImportError:
     # When running directly, use absolute imports
     from app.core.config import settings
     from app.core.database import engine, Base
-    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner
+    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices
     from app.websocket.chat_handler import router as chat_router
 
 # Création des tables
