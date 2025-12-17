@@ -3,5 +3,7 @@
   "/products/page": "app/products/page.js",
   "/categories/[slug]/page": "app/categories/[slug]/page.js",
   "/panier/page": "app/panier/page.js",
-  "/admin/page": "app/admin/page.js"
+  "/admin/page": "app/admin/page.js",
+  "/admin/products/page": "app/admin/products/page.js",
+  "/admin/hero/page": "app/admin/hero/page.js"
 }
