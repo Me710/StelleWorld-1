@@ -17,7 +17,7 @@ from app.models import (
     CustomerInvoice,
     HeroSlide, SiteSettings,
     Subscription, SubscriptionItem, SubscriptionInvoice,
-    Appointment, Chat, Banner
+    Appointment, ChatConversation, ChatMessage, ChatNotification, Banner
 )
 
 def test_connection():
