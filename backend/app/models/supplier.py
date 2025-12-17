@@ -60,7 +60,7 @@ class SupplierInvoice(Base):
     invoice_number = Column(String(100), unique=True, index=True, nullable=False)
     
     # Relation fournisseur
-    supplier_id = Column(Integer, ForeignKey="suppliers.id"), nullable=False)
+    supplier_id = Column(Integer, ForeignKey("suppliers.id"), nullable=False)
     supplier = relationship("Supplier", back_populates="invoices")
     
     # Montants
