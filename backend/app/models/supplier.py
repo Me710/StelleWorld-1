@@ -3,7 +3,7 @@ Modèles pour les fournisseurs
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, Float
+from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
