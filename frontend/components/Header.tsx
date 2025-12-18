@@ -1,20 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/lib/store'
 import { FiShoppingCart, FiMenu, FiX } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 
+interface Category {
+  id: number
+  name: string
+  slug: string
+}
+
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
   const totalItems = useCartStore(state => state.getTotalItems())
 
-  const categories = [
-    { name: 'Mèches', slug: 'meches' },
-    { name: 'Skin Care', slug: 'skin-care' },
-    { name: 'Rendez-vous', slug: 'rendez-vous' },
-  ]
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
+  const loadCategories = async () => {
+    try {
+      const response = await fetch('/api/products/categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories || [])
+      }
+    } catch (error) {
+      console.error('Erreur chargement catégories:', error)
+      // Fallback
+      setCategories([
+        { id: 1, name: 'Mèches', slug: 'meches' },
+        { id: 2, name: 'Skin Care', slug: 'skin-care' },
+      ])
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -32,7 +54,7 @@ export default function Header() {
             <Link href="/products" className="text-gray-700 hover:text-pink-600 font-medium transition-colors">
               Tous les produits
             </Link>
-            {categories.map((cat) => (
+            {categories.slice(0, 4).map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
@@ -41,6 +63,9 @@ export default function Header() {
                 {cat.name}
               </Link>
             ))}
+            <Link href="/rendez-vous" className="text-gray-700 hover:text-pink-600 font-medium transition-colors">
+              Rendez-vous
+            </Link>
           </nav>
 
           {/* Actions */}
@@ -98,6 +123,13 @@ export default function Header() {
                 {cat.name}
               </Link>
             ))}
+            <Link
+              href="/rendez-vous"
+              className="block text-gray-700 hover:text-pink-600 font-medium py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Rendez-vous
+            </Link>
             <a
               href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace('+', '')}?text=Bonjour`}
               target="_blank"

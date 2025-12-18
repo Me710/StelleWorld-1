@@ -13,13 +13,13 @@ from fastapi.responses import HTMLResponse
 try:
     from .core.config import settings
     from .core.database import engine, Base
-    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices
+    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices, services
     from .websocket.chat_handler import router as chat_router
 except ImportError:
     # When running directly, use absolute imports
     from app.core.config import settings
     from app.core.database import engine, Base
-    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices
+    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices, services
     from app.websocket.chat_handler import router as chat_router
 
 # Création des tables
@@ -67,20 +67,10 @@ app.include_router(banner.router, tags=["Banners"])
 app.include_router(hero.router, prefix="/api", tags=["Hero Slider"])
 app.include_router(suppliers.router, prefix="/api/suppliers", tags=["Suppliers"])
 app.include_router(invoices.router, prefix="/api/invoices", tags=["Invoices"])
+app.include_router(services.router, prefix="/api/services", tags=["Services"])
 
 # WebSocket pour chat temps réel
 app.include_router(chat_router, prefix="/ws")
-
-# Health check
-@app.get("/health")
-async def health_check():
-    """Vérification de l'état de l'API"""
-    return {"status": "healthy", "service": "StelleWorld API"}
-
-@app.get("/api/health")
-async def api_health_check():
-    """Vérification de l'état de l'API"""
-    return {"status": "healthy", "service": "StelleWorld API", "version": "2.0.0"}
 
 if __name__ == "__main__":
     import uvicorn

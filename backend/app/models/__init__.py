@@ -1,7 +1,7 @@
 # Modèles de données SQLAlchemy pour StelleWorld
 from app.models.banner import Banner
 from app.models.user import User
-from app.models.product import Product, Category, ProductVariant
+from app.models.product import Product, Category, ProductVariant, HairCategory, SkinCareCategory
 from app.models.order import Order, OrderItem, OrderStatus, PaymentStatus
 from app.models.subscription import Subscription, SubscriptionItem, SubscriptionInvoice
 from app.models.appointment import Appointment
@@ -9,12 +9,15 @@ from app.models.chat import ChatConversation, ChatMessage, ChatNotification
 from app.models.supplier import Supplier, SupplierInvoice
 from app.models.invoice import CustomerInvoice, InvoiceStatus
 from app.models.hero_slider import HeroSlide, SiteSettings
+from app.models.service import Service, ServiceCategory, ServiceAvailability, ServiceAddon
 
 __all__ = [
     "Banner",
     "User", 
     "Product",
     "Category",
+    "HairCategory",
+    "SkinCareCategory",
     "ProductVariant",
     "Order",
     "OrderItem",
@@ -32,5 +35,9 @@ __all__ = [
     "CustomerInvoice",
     "InvoiceStatus",
     "HeroSlide",
-    "SiteSettings"
+    "SiteSettings",
+    "Service",
+    "ServiceCategory",
+    "ServiceAvailability",
+    "ServiceAddon"
 ]

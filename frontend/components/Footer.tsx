@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa'
+import { FaWhatsapp, FaFacebook } from 'react-icons/fa'
 
 export default function Footer() {
   return (
@@ -25,10 +25,12 @@ export default function Footer() {
               >
                 <FaWhatsapp className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-pink-400 transition-colors">
-                <FaInstagram className="w-6 h-6" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+              <a
+                href="https://www.facebook.com/profile.php?id=61583818906007"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-blue-400 transition-colors"
+              >
                 <FaFacebook className="w-6 h-6" />
               </a>
             </div>
@@ -61,14 +63,14 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>
-                <a 
+                <a
                   href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace('+', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors flex items-center space-x-2"
                 >
                   <FaWhatsapp className="w-4 h-4" />
-                  <span>{process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}</span>
+                  <span>Contactez-nous sur WhatsApp</span>
                 </a>
               </li>
               <li>Montréal, QC, Canada</li>
