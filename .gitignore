@@ -136,3 +136,6 @@ Desktop.ini
 # Environment files
 *.env
 *.env.*
+
+frontend/.next
+backend/.venv

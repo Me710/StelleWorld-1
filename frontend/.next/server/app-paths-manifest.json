@@ -1,7 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/(public)/products/page": "app/(public)/products/page.js",
-  "/(public)/categories/[slug]/page": "app/(public)/categories/[slug]/page.js",
-  "/(public)/panier/page": "app/(public)/panier/page.js",
-  "/(public)/page": "app/(public)/page.js"
+  "/admin/categories/page": "app/admin/categories/page.js",
+  "/admin/services/page": "app/admin/services/page.js",
+  "/admin/appointments/page": "app/admin/appointments/page.js",
+  "/admin/invoices/page": "app/admin/invoices/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/admin/login/page": "app/admin/login/page.js"
 }
