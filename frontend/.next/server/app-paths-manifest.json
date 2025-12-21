@@ -1,8 +1,7 @@
 {
-  "/admin/categories/page": "app/admin/categories/page.js",
-  "/admin/services/page": "app/admin/services/page.js",
-  "/admin/appointments/page": "app/admin/appointments/page.js",
-  "/admin/invoices/page": "app/admin/invoices/page.js",
-  "/admin/settings/page": "app/admin/settings/page.js",
-  "/admin/login/page": "app/admin/login/page.js"
+  "/(public)/page": "app/(public)/page.js",
+  "/(public)/categories/[slug]/page": "app/(public)/categories/[slug]/page.js",
+  "/admin/products/page": "app/admin/products/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/page": "app/admin/page.js"
 }

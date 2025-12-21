@@ -1,4 +1,4 @@
-// File: D:\Projects\StelleWorld-1\frontend\app\(public)\categories\[slug]\page.tsx
+// File: C:\Users\Admin\OneDrive - Université Laval\Documents\StelleWorld-1\frontend\app\(public)\categories\[slug]\page.tsx
 import * as entry from '../../../../../../app/(public)/categories/[slug]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
