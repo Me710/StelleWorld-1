@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useCartStore } from '@/lib/store'
 import { FiShoppingCart, FiMenu, FiX } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
+import Logo from './Logo'
 
 interface Category {
   id: number
@@ -43,10 +44,8 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-              StelleWorld
-            </div>
+          <Link href="/" className="flex items-center">
+            <Logo variant="dark" size="sm" />
           </Link>
 
           {/* Navigation Desktop */}

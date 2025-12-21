@@ -12,6 +12,8 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
   const [search, setSearch] = useState('')
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [inStockOnly, setInStockOnly] = useState(false)
+  const [onPromoOnly, setOnPromoOnly] = useState(false)
 
   useEffect(() => {
     loadCategories()
@@ -19,7 +21,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     loadProducts()
-  }, [selectedCategory, search])
+  }, [selectedCategory, search, inStockOnly, onPromoOnly])
 
   const loadCategories = async () => {
     try {
@@ -36,6 +38,8 @@ export default function ProductsPage() {
       const params: any = { limit: 100 }
       if (selectedCategory) params.category_id = selectedCategory
       if (search) params.search = search
+      if (inStockOnly) params.in_stock_only = true
+      if (onPromoOnly) params.on_promo = true
       
       const data = await getProducts(params)
       setProducts(data.products || [])
@@ -80,12 +84,22 @@ export default function ProductsPage() {
       <div>
         <h3 className="font-bold text-gray-900 mb-4">Disponibilité</h3>
         <div className="space-y-2">
-          <label className="flex items-center space-x-2">
-            <input type="checkbox" className="rounded border-gray-300" />
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input 
+              type="checkbox" 
+              className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+              checked={inStockOnly}
+              onChange={(e) => setInStockOnly(e.target.checked)}
+            />
             <span className="text-gray-700">En stock uniquement</span>
           </label>
-          <label className="flex items-center space-x-2">
-            <input type="checkbox" className="rounded border-gray-300" />
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input 
+              type="checkbox" 
+              className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+              checked={onPromoOnly}
+              onChange={(e) => setOnPromoOnly(e.target.checked)}
+            />
             <span className="text-gray-700">En promotion</span>
           </label>
         </div>

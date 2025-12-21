@@ -24,6 +24,7 @@ export default function AdminHeroPage() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null)
+  const [previewSlide, setPreviewSlide] = useState<HeroSlide | null>(null)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -241,8 +242,12 @@ export default function AdminHeroPage() {
                       </button>
                     </div>
 
-                    {/* Image */}
-                    <div className="relative w-32 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                    {/* Image - Cliquable pour prévisualiser */}
+                    <button
+                      onClick={() => setPreviewSlide(slide)}
+                      className="relative w-32 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 hover:ring-2 hover:ring-pink-500 transition-all cursor-pointer"
+                      title="Cliquer pour prévisualiser"
+                    >
                       {slide.image_url ? (
                         <Image
                           src={slide.image_url}
@@ -255,7 +260,7 @@ export default function AdminHeroPage() {
                           <FiImage className="w-8 h-8 text-gray-400" />
                         </div>
                       )}
-                    </div>
+                    </button>
 
                     {/* Contenu */}
                     <div className="flex-1 min-w-0">
@@ -437,6 +442,76 @@ export default function AdminHeroPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Modal prévisualisation */}
+      {previewSlide && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setPreviewSlide(null)}
+        >
+          <div className="relative w-full max-w-5xl mx-4" onClick={(e) => e.stopPropagation()}>
+            {/* Bouton fermer */}
+            <button
+              onClick={() => setPreviewSlide(null)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 text-lg font-semibold"
+            >
+              ✕ Fermer
+            </button>
+            
+            {/* Prévisualisation du slide */}
+            <div className="relative w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden">
+              {previewSlide.image_url ? (
+                <>
+                  <Image
+                    src={previewSlide.image_url}
+                    alt={previewSlide.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+                  
+                  {/* Contenu du slide */}
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="max-w-2xl px-8 text-white">
+                      <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                        {previewSlide.title}
+                      </h2>
+                      {previewSlide.subtitle && (
+                        <p className="text-lg md:text-xl mb-6 text-gray-200">
+                          {previewSlide.subtitle}
+                        </p>
+                      )}
+                      {previewSlide.cta_text && (
+                        <span className="inline-block bg-pink-600 text-white px-6 py-3 rounded-full font-bold">
+                          {previewSlide.cta_text}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                  <div className="text-center text-gray-400">
+                    <FiImage className="w-16 h-16 mx-auto mb-4" />
+                    <p>Aucune image</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Infos slide */}
+            <div className="mt-4 bg-white rounded-lg p-4">
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">URL :</span> {previewSlide.image_url || 'Non définie'}
+              </p>
+              {previewSlide.cta_link && (
+                <p className="text-sm text-gray-600 mt-1">
+                  <span className="font-semibold">Lien :</span> {previewSlide.cta_link}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}

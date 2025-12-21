@@ -164,7 +164,11 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Livraison</span>
-                  <span className="text-green-600 font-semibold">Gratuite</span>
+                  {getTotalPrice >= 70 ? (
+                    <span className="text-green-600 font-semibold">Gratuite</span>
+                  ) : (
+                    <span className="text-gray-600">À déterminer</span>
+                  )}
                 </div>
                 <div className="border-t pt-3">
                   <div className="flex justify-between text-xl font-bold text-gray-900">
@@ -209,9 +213,12 @@ export default function CartPage() {
               )}
 
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-2">📦 Livraison gratuite</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">📦 Livraison gratuite à partir de 70$</h3>
                 <p className="text-sm text-gray-600">
-                  Profitez de la livraison gratuite sur toutes les commandes en Grande Région de Montréal
+                  {getTotalPrice >= 70 
+                    ? "Félicitations ! Vous bénéficiez de la livraison gratuite."
+                    : `Plus que ${(70 - getTotalPrice).toFixed(2)} $ pour la livraison gratuite !`
+                  }
                 </p>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { FiLock, FiMail, FiEye, FiEyeOff } from 'react-icons/fi'
 import axios from 'axios'
+import Logo from '@/components/Logo'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
 
@@ -81,9 +82,9 @@ export default function AdminLoginPage() {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-            StelleWorld
-          </h1>
+          <div className="flex justify-center mb-2">
+            <Logo variant="dark" size="lg" />
+          </div>
           <p className="text-gray-500 mt-2">Administration</p>
         </div>
 
@@ -156,7 +157,7 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="text-center text-gray-400 text-xs mt-8">
-          &copy; {new Date().getFullYear()} StelleWorld - Administration
+          &copy; {new Date().getFullYear()} La Maison - Administration
         </p>
       </div>
     </div>

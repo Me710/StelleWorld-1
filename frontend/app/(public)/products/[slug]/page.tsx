@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCartStore } from '@/lib/store'
 import { getProductBySlug } from '@/lib/api'
-import { FiShoppingCart, FiMinus, FiPlus, FiChevronLeft, FiShare2, FiHeart } from 'react-icons/fi'
+import { FiShoppingCart, FiMinus, FiPlus, FiChevronLeft, FiShare2 } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import ProductCard from '@/components/ProductCard'
 
@@ -63,7 +63,7 @@ export default function ProductDetailPage() {
     try {
       const data = await getProductBySlug(slug)
       setProduct(data)
-      setSelectedImage(data.main_image_url || '/images/placeholder.jpg')
+      setSelectedImage(data.main_image_url || '/images/placeholder.svg')
     } catch (err) {
       console.error('Erreur:', err)
       setError('Produit non trouvé')
@@ -80,7 +80,7 @@ export default function ProductDetailPage() {
       name: product.name,
       slug: product.slug,
       price: product.price,
-      image: product.main_image_url || '/images/placeholder.jpg',
+      image: product.main_image_url || '/images/placeholder.svg',
       stock: product.stock_quantity || 999,
       quantity: quantity,
     })
@@ -203,7 +203,7 @@ export default function ProductDetailPage() {
             {/* Image principale */}
             <div className="relative aspect-square bg-white rounded-2xl overflow-hidden shadow-lg">
               <Image
-                src={selectedImage || '/images/placeholder.jpg'}
+                src={selectedImage || '/images/placeholder.svg'}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -293,12 +293,7 @@ export default function ProductDetailPage() {
               {product.is_in_stock ? (
                 <>
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-green-700 font-medium">
-                    {product.track_inventory && product.stock_quantity
-                      ? `En stock (${product.stock_quantity} disponibles)`
-                      : 'En stock'
-                    }
-                  </span>
+                  <span className="text-green-700 font-medium">En stock</span>
                 </>
               ) : (
                 <>
@@ -365,10 +360,6 @@ export default function ProductDetailPage() {
               >
                 <FiShare2 className="w-5 h-5" />
                 <span>Partager</span>
-              </button>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-pink-600 transition-colors">
-                <FiHeart className="w-5 h-5" />
-                <span>Favoris</span>
               </button>
             </div>
 

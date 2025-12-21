@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FiHome, FiPackage, FiShoppingCart, FiFileText, FiLogOut, FiGrid, FiScissors, FiCalendar, FiSettings, FiUser } from 'react-icons/fi'
+import { FiHome, FiPackage, FiShoppingCart, FiFileText, FiLogOut, FiGrid, FiScissors, FiCalendar, FiSettings, FiUser, FiImage, FiMessageCircle } from 'react-icons/fi'
+import Logo from './Logo'
 import { ReactNode } from 'react'
 import axios from 'axios'
 
@@ -34,6 +35,8 @@ export default function AdminPageWrapper({ children }: AdminPageWrapperProps) {
     { name: 'Services', href: '/admin/services', icon: FiScissors },
     { name: 'Rendez-vous', href: '/admin/appointments', icon: FiCalendar },
     { name: 'Factures', href: '/admin/invoices', icon: FiFileText },
+    { name: 'Hero Slider', href: '/admin/hero', icon: FiImage },
+    { name: 'FAQ', href: '/admin/faq', icon: FiMessageCircle },
     { name: 'Paramètres', href: '/admin/settings', icon: FiSettings },
   ]
 
@@ -99,10 +102,10 @@ export default function AdminPageWrapper({ children }: AdminPageWrapperProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-                StelleWorld
+              <Link href="/">
+                <Logo variant="dark" size="sm" />
               </Link>
-              <span className="text-sm text-gray-500">Admin</span>
+              <span className="text-sm text-gray-500 bg-pink-100 px-2 py-1 rounded">Admin</span>
             </div>
             <div className="flex items-center space-x-4">
               {user && (

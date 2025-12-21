@@ -56,6 +56,8 @@ async def get_products(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     featured_only: bool = False,
+    in_stock_only: bool = False,
+    on_promo: bool = False,
     sort_by: str = Query("created_at", regex="^(created_at|name|price|sales_count)$"),
     sort_order: str = Query("desc", regex="^(asc|desc)$"),
     db: Session = Depends(get_db)
@@ -84,6 +86,17 @@ async def get_products(
     
     if featured_only:
         query = query.filter(Product.is_featured == True)
+    
+    if in_stock_only:
+        query = query.filter(
+            or_(
+                Product.track_inventory == False,
+                Product.stock_quantity > 0
+            )
+        )
+    
+    if on_promo:
+        query = query.filter(Product.compare_at_price != None)
     
     # Tri
     if sort_order == "desc":
@@ -289,6 +302,9 @@ async def create_product(
     stock_quantity: int = 0,
     track_inventory: bool = True,
     is_featured: bool = False,
+    main_image_url: str = None,
+    gallery_images: str = None,
+    compare_at_price: float = None,
     db: Session = Depends(get_db)
 ) -> Any:
     """Créer un nouveau produit (Admin)"""
@@ -304,7 +320,10 @@ async def create_product(
         category_id=category_id,
         stock_quantity=stock_quantity,
         track_inventory=track_inventory,
-        is_featured=is_featured
+        is_featured=is_featured,
+        main_image_url=main_image_url,
+        gallery_images=gallery_images,
+        compare_at_price=compare_at_price
     )
     
     db.add(product)
@@ -319,10 +338,14 @@ async def update_product(
     product_id: int,
     name: str = None,
     description: str = None,
+    short_description: str = None,
     price: float = None,
     stock_quantity: int = None,
     is_active: bool = None,
     is_featured: bool = None,
+    main_image_url: str = None,
+    gallery_images: str = None,
+    compare_at_price: float = None,
     db: Session = Depends(get_db)
 ) -> Any:
     """Mettre à jour un produit (Admin)"""
@@ -337,6 +360,8 @@ async def update_product(
         product.slug = slugify(name)
     if description is not None:
         product.description = description
+    if short_description is not None:
+        product.short_description = short_description
     if price is not None:
         product.price = price
     if stock_quantity is not None:
@@ -345,6 +370,12 @@ async def update_product(
         product.is_active = is_active
     if is_featured is not None:
         product.is_featured = is_featured
+    if main_image_url is not None:
+        product.main_image_url = main_image_url
+    if gallery_images is not None:
+        product.gallery_images = gallery_images
+    if compare_at_price is not None:
+        product.compare_at_price = compare_at_price
     
     db.commit()
     

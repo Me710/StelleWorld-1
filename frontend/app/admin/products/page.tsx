@@ -24,6 +24,7 @@ interface Product {
   compare_at_price: number | null
   stock_quantity: number | null
   main_image_url: string | null
+  gallery_images: string | null
   is_active: boolean
   is_featured: boolean
   category: Category | null
@@ -50,7 +51,8 @@ export default function AdminProductsPage() {
     stock_quantity: 0,
     category_id: '',
     is_featured: false,
-    main_image_url: ''
+    main_image_url: '',
+    gallery_images: ''
   })
 
   useEffect(() => {
@@ -93,6 +95,17 @@ export default function AdminProductsPage() {
       params.append('stock_quantity', formData.stock_quantity.toString())
       if (formData.category_id) params.append('category_id', formData.category_id)
       params.append('is_featured', formData.is_featured.toString())
+      if (formData.main_image_url) params.append('main_image_url', formData.main_image_url)
+      if (formData.compare_at_price) params.append('compare_at_price', formData.compare_at_price)
+      
+      // Convertir les URLs de galerie en JSON
+      if (formData.gallery_images.trim()) {
+        const urls = formData.gallery_images
+          .split(/[\n,]/)
+          .map(url => url.trim())
+          .filter(url => url.length > 0)
+        params.append('gallery_images', JSON.stringify(urls))
+      }
 
       if (editingProduct) {
         // Update
@@ -113,6 +126,18 @@ export default function AdminProductsPage() {
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product)
+    // Parse gallery_images JSON to display as text lines
+    let galleryText = ''
+    if (product.gallery_images) {
+      try {
+        const parsed = JSON.parse(product.gallery_images)
+        if (Array.isArray(parsed)) {
+          galleryText = parsed.join('\n')
+        }
+      } catch {
+        galleryText = product.gallery_images
+      }
+    }
     setFormData({
       name: product.name,
       description: product.description || '',
@@ -122,7 +147,8 @@ export default function AdminProductsPage() {
       stock_quantity: product.stock_quantity || 0,
       category_id: product.category?.id?.toString() || '',
       is_featured: product.is_featured,
-      main_image_url: product.main_image_url || ''
+      main_image_url: product.main_image_url || '',
+      gallery_images: galleryText
     })
     setShowModal(true)
   }
@@ -159,7 +185,8 @@ export default function AdminProductsPage() {
       stock_quantity: 0,
       category_id: '',
       is_featured: false,
-      main_image_url: ''
+      main_image_url: '',
+      gallery_images: ''
     })
   }
 
@@ -493,6 +520,22 @@ export default function AdminProductsPage() {
                   placeholder="https://..."
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Images de galerie (URLs séparées par des retours à la ligne)
+                </label>
+                <textarea
+                  value={formData.gallery_images}
+                  onChange={(e) => setFormData({ ...formData, gallery_images: e.target.value })}
+                  rows={3}
+                  placeholder="https://image1.jpg&#10;https://image2.jpg&#10;https://video.mp4"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Ajoutez des URLs d'images ou vidéos pour montrer différentes couleurs ou aspects du produit
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">

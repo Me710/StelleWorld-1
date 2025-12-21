@@ -9,7 +9,7 @@ import PromoBanner from '@/components/PromoBanner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'StelleWorld - Votre boutique beauté',
+  title: 'La Maison - Votre boutique beauté',
   description: 'Découvrez notre sélection de mèches, soins et services beauté',
 }
 

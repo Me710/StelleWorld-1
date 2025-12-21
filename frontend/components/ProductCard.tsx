@@ -31,7 +31,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       name: product.name,
       slug: product.slug,
       price: product.price,
-      image: product.main_image_url || '/images/placeholder.jpg',
+      image: product.main_image_url || '/images/placeholder.svg',
       stock: product.stock_quantity,
     })
   }
@@ -48,7 +48,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Image - Plus grande  */}
         <div className="relative h-80 overflow-hidden bg-gray-100 flex-shrink-0">
           <Image
-            src={product.main_image_url || '/images/placeholder.jpg'}
+            src={product.main_image_url || '/images/placeholder.svg'}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -83,12 +83,12 @@ export default function ProductCard({ product }: ProductCardProps) {
           </p>
         )}
 
-        <div className="flex items-center space-x-2 mb-4">
-          <span className="text-xl font-bold text-pink-600">
+        <div className="flex items-center space-x-2 mb-4 flex-wrap">
+          <span className="text-base sm:text-xl font-bold text-pink-600">
             {product.price.toFixed(2)} $
           </span>
           {product.compare_at_price && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-xs sm:text-sm text-gray-500 line-through">
               {product.compare_at_price.toFixed(2)} $
             </span>
           )}

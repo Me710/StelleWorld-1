@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { FaWhatsapp, FaFacebook } from 'react-icons/fa'
+import Logo from './Logo'
 
 export default function Footer() {
   return (
@@ -10,9 +11,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Description */}
           <div className="col-span-1">
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent mb-4">
-              StelleWorld
-            </h3>
+            <div className="mb-4">
+              <Logo variant="light" size="md" />
+            </div>
             <p className="text-gray-400 text-sm">
               Votre destination beauté pour les mèches, soins de la peau et services professionnels.
             </p>
@@ -73,14 +74,14 @@ export default function Footer() {
                   <span>Contactez-nous sur WhatsApp</span>
                 </a>
               </li>
-              <li>Montréal, QC, Canada</li>
+              <li>Ville de Québec, QC, Canada</li>
               <li>Ouvert 7j/7</li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} StelleWorld. Tous droits réservés.</p>
+          <p>&copy; {new Date().getFullYear()} La Maison. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
