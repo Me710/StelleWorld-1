@@ -57,7 +57,7 @@ services:
   # Frontend - Next.js Web Service
   # ============================================
   - type: web
-    name: stelleworld
+    name: lamaison 
     runtime: node
     region: oregon
     plan: free
