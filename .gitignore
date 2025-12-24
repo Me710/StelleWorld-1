@@ -136,6 +136,4 @@ Desktop.ini
 *.env
 *.env.*
 
-frontend/.next
 backend/.venv
-frontend/.next/

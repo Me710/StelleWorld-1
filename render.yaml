@@ -1,0 +1,80 @@
+# Render.com Blueprint - StelleWorld
+# Documentation: https://render.com/docs/blueprint-spec
+
+services:
+  # ============================================
+  # Backend - FastAPI Python Service
+  # ============================================
+  - type: web
+    name: stelleworld-api
+    runtime: python
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Base de données Neon PostgreSQL
+      - key: DATABASE_URL
+        sync: false
+      # Sécurité
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      # Frontend URL (sera mis à jour après déploiement)
+      - key: FRONTEND_URL
+        value: https://stelleworld.onrender.com
+      # WhatsApp
+      - key: WHATSAPP_BUSINESS_NUMBER
+        value: "+15813081802"
+      # Stripe (optionnel - à configurer manuellement)
+      - key: STRIPE_PUBLIC_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # Email SMTP (optionnel)
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_TLS
+        value: "true"
+
+  # ============================================
+  # Frontend - Next.js Web Service
+  # ============================================
+  - type: web
+    name: stelleworld
+    runtime: node
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: frontend
+    buildCommand: yarn install && yarn build
+    startCommand: yarn start
+    envVars:
+      # URL de l'API backend
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: stelleworld-api
+          envVarKey: RENDER_EXTERNAL_URL
+      # WhatsApp
+      - key: NEXT_PUBLIC_WHATSAPP_NUMBER
+        value: "+15813081802"
+      # Port pour Next.js
+      - key: PORT
+        value: "3000"
