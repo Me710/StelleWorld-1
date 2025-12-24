@@ -30,28 +30,10 @@ services:
         value: "30"
       # Frontend URL (sera mis à jour après déploiement)
       - key: FRONTEND_URL
-        value: https://stelleworld.onrender.com
+        value: https://lamaison.onrender.com
       # WhatsApp
       - key: WHATSAPP_BUSINESS_NUMBER
         value: "+15813081802"
-      # Stripe (optionnel - à configurer manuellement)
-      - key: STRIPE_PUBLIC_KEY
-        sync: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_WEBHOOK_SECRET
-        sync: false
-      # Email SMTP (optionnel)
-      - key: SMTP_HOST
-        sync: false
-      - key: SMTP_PORT
-        value: "587"
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASSWORD
-        sync: false
-      - key: SMTP_TLS
-        value: "true"
 
   # ============================================
   # Frontend - Next.js Web Service
