@@ -48,15 +48,12 @@ services:
     plan: free
     branch: main
     rootDir: frontend
-    buildCommand: yarn install && yarn build
+    buildCommand: yarn install && yarn add sharp && yarn build
     startCommand: yarn start
     envVars:
-      # URL de l'API backend
+      # URL de l'API backend (avec /api suffix)
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: stelleworld-api
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://stelleworld-api.onrender.com/api
       # WhatsApp
       - key: NEXT_PUBLIC_WHATSAPP_NUMBER
         value: "+15813081802"

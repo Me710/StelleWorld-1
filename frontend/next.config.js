@@ -6,13 +6,19 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost', 'via.placeholder.com', 'images.unsplash.com'],
+    // remotePatterns remplace domains (deprecated)
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
     ],
+    // Désactiver l'optimisation pour les images externes problématiques
+    unoptimized: false,
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
