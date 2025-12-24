@@ -1,4 +1,4 @@
-// File: C:\Users\Admin\OneDrive - Université Laval\Documents\StelleWorld-1\frontend\app\layout.tsx
+// File: D:\Projects\StelleWorld-1\frontend\app\layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
