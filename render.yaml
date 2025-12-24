@@ -8,7 +8,6 @@ services:
   - type: web
     name: stelleworld-api
     runtime: python
-    pythonVersion: "3.11.4"
     region: oregon
     plan: free
     branch: main
@@ -17,6 +16,9 @@ services:
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      # Version Python (3.11 pour compatibilité psycopg2)
+      - key: PYTHON_VERSION
+        value: "3.11.4"
       # Base de données Neon PostgreSQL
       - key: DATABASE_URL
         sync: false
