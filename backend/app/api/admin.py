@@ -1,5 +1,6 @@
 """
 Endpoints d'administration pour la gestion du back-office
+Tous les endpoints nécessitent une authentification admin
 """
 
 from typing import Any, Optional
@@ -8,21 +9,23 @@ from sqlalchemy.orm import Session
 from slugify import slugify
 
 from app.core.database import get_db
+from app.core.security import get_current_admin_user
 from app.models.product import Product, Category
+from app.models.user import User
 
 router = APIRouter()
 
 
 # ========== CATEGORIES ADMIN ==========
 
-@router.get("/categories")
+@router.get("/categories", dependencies=[Depends(get_current_admin_user)])
 async def get_all_categories(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     include_inactive: bool = False,
     db: Session = Depends(get_db)
 ) -> Any:
-    """Liste toutes les catégories pour l'admin"""
+    """Liste toutes les catégories pour l'admin (authentification requise)"""
     
     query = db.query(Category)
     
@@ -59,7 +62,7 @@ async def get_all_categories(
     }
 
 
-@router.post("/categories")
+@router.post("/categories", dependencies=[Depends(get_current_admin_user)])
 async def create_category(
     name: str,
     description: Optional[str] = None,
@@ -68,7 +71,7 @@ async def create_category(
     is_active: bool = True,
     db: Session = Depends(get_db)
 ) -> Any:
-    """Créer une nouvelle catégorie"""
+    """Créer une nouvelle catégorie (authentification admin requise)"""
     
     # Vérifier que le nom n'existe pas déjà
     existing = db.query(Category).filter(Category.name == name).first()
@@ -106,7 +109,7 @@ async def create_category(
     }
 
 
-@router.put("/categories/{category_id}")
+@router.put("/categories/{category_id}", dependencies=[Depends(get_current_admin_user)])
 async def update_category(
     category_id: int,
     name: Optional[str] = None,
@@ -116,7 +119,7 @@ async def update_category(
     is_active: Optional[bool] = None,
     db: Session = Depends(get_db)
 ) -> Any:
-    """Mettre à jour une catégorie"""
+    """Mettre à jour une catégorie (authentification admin requise)"""
     
     category = db.query(Category).filter(Category.id == category_id).first()
     if not category:
@@ -151,12 +154,12 @@ async def update_category(
     return {"message": "Catégorie mise à jour avec succès"}
 
 
-@router.delete("/categories/{category_id}")
+@router.delete("/categories/{category_id}", dependencies=[Depends(get_current_admin_user)])
 async def delete_category(
     category_id: int,
     db: Session = Depends(get_db)
 ) -> Any:
-    """Supprimer (désactiver) une catégorie"""
+    """Supprimer (désactiver) une catégorie (authentification admin requise)"""
     
     category = db.query(Category).filter(Category.id == category_id).first()
     if not category:
@@ -179,7 +182,7 @@ async def delete_category(
 
 # ========== PRODUCTS ADMIN (complémentaires) ==========
 
-@router.get("/products")
+@router.get("/products", dependencies=[Depends(get_current_admin_user)])
 async def get_all_products_admin(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
@@ -188,7 +191,7 @@ async def get_all_products_admin(
     search: Optional[str] = None,
     db: Session = Depends(get_db)
 ) -> Any:
-    """Liste tous les produits pour l'admin (incluant les inactifs)"""
+    """Liste tous les produits pour l'admin (incluant les inactifs, auth requise)"""
     
     query = db.query(Product)
     
@@ -235,12 +238,12 @@ async def get_all_products_admin(
     }
 
 
-@router.put("/products/{product_id}/toggle-active")
+@router.put("/products/{product_id}/toggle-active", dependencies=[Depends(get_current_admin_user)])
 async def toggle_product_active(
     product_id: int,
     db: Session = Depends(get_db)
 ) -> Any:
-    """Activer/désactiver un produit"""
+    """Activer/désactiver un produit (authentification admin requise)"""
     
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
@@ -255,13 +258,13 @@ async def toggle_product_active(
     }
 
 
-@router.delete("/products/{product_id}")
+@router.delete("/products/{product_id}", dependencies=[Depends(get_current_admin_user)])
 async def delete_product(
     product_id: int,
     permanent: bool = False,
     db: Session = Depends(get_db)
 ) -> Any:
-    """Supprimer un produit (soft delete par défaut)"""
+    """Supprimer un produit (soft delete par défaut, auth admin requise)"""
     
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
