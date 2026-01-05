@@ -13,13 +13,13 @@ from fastapi.responses import HTMLResponse
 try:
     from .core.config import settings
     from .core.database import engine, Base
-    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices, services, faq
+    from .api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices, services, faq, uploads
     from .websocket.chat_handler import router as chat_router
 except ImportError:
     # When running directly, use absolute imports
     from app.core.config import settings
     from app.core.database import engine, Base
-    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices, services, faq
+    from app.api import auth, products, orders, subscriptions, appointments, chat, analytics, admin, banner, hero, suppliers, invoices, services, faq, uploads
     from app.websocket.chat_handler import router as chat_router
 
 # Création des tables
@@ -69,6 +69,7 @@ app.include_router(suppliers.router, prefix="/api/suppliers", tags=["Suppliers"]
 app.include_router(invoices.router, prefix="/api/invoices", tags=["Invoices"])
 app.include_router(services.router, prefix="/api/services", tags=["Services"])
 app.include_router(faq.router, prefix="/api/faq", tags=["FAQ"])
+app.include_router(uploads.router, prefix="/api/uploads", tags=["Uploads"])
 
 # WebSocket pour chat temps réel
 app.include_router(chat_router, prefix="/ws")

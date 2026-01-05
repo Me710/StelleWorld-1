@@ -37,6 +37,13 @@ services:
       # WhatsApp
       - key: WHATSAPP_BUSINESS_NUMBER
         value: "+15813081802"
+      # Cloudinary (stockage images)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
 
   # ============================================
   # Frontend - Next.js Web Service

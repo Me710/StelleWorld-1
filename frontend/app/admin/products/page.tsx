@@ -6,6 +6,7 @@ import { FiPlus, FiEdit, FiTrash2, FiRefreshCw, FiSearch, FiStar, FiPackage } fr
 import axios from 'axios'
 import AdminPageWrapper from '@/components/AdminPageWrapper'
 import Toast, { getAuthHeaders } from '@/components/Toast'
+import ImageUpload from '@/components/ImageUpload'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
 
@@ -54,8 +55,7 @@ export default function AdminProductsPage() {
     stock_quantity: 0,
     category_id: '',
     is_featured: false,
-    main_image_url: '',
-    gallery_images: ''
+    images: [] as string[] // Array of image URLs (first one is main image)
   })
 
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -122,16 +122,14 @@ export default function AdminProductsPage() {
       params.append('stock_quantity', formData.stock_quantity.toString())
       if (formData.category_id) params.append('category_id', formData.category_id)
       params.append('is_featured', formData.is_featured.toString())
-      if (formData.main_image_url) params.append('main_image_url', formData.main_image_url)
       if (formData.compare_at_price) params.append('compare_at_price', formData.compare_at_price)
 
-      // Convertir les URLs de galerie en JSON
-      if (formData.gallery_images.trim()) {
-        const urls = formData.gallery_images
-          .split(/[\n,]/)
-          .map(url => url.trim())
-          .filter(url => url.length > 0)
-        params.append('gallery_images', JSON.stringify(urls))
+      // Gérer les images (première = principale, reste = galerie)
+      if (formData.images.length > 0) {
+        params.append('main_image_url', formData.images[0])
+        if (formData.images.length > 1) {
+          params.append('gallery_images', JSON.stringify(formData.images.slice(1)))
+        }
       }
 
       const headers = getAuthHeaders()
@@ -166,18 +164,23 @@ export default function AdminProductsPage() {
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product)
-    // Parse gallery_images JSON to display as text lines
-    let galleryText = ''
+
+    // Construire le tableau d'images (principale + galerie)
+    const images: string[] = []
+    if (product.main_image_url) {
+      images.push(product.main_image_url)
+    }
     if (product.gallery_images) {
       try {
         const parsed = JSON.parse(product.gallery_images)
         if (Array.isArray(parsed)) {
-          galleryText = parsed.join('\n')
+          images.push(...parsed)
         }
       } catch {
-        galleryText = product.gallery_images
+        // Si ce n'est pas du JSON, ignorer
       }
     }
+
     setFormData({
       name: product.name,
       description: product.description || '',
@@ -187,8 +190,7 @@ export default function AdminProductsPage() {
       stock_quantity: product.stock_quantity || 0,
       category_id: product.category?.id?.toString() || '',
       is_featured: product.is_featured,
-      main_image_url: product.main_image_url || '',
-      gallery_images: galleryText
+      images
     })
     setShowModal(true)
   }
@@ -234,8 +236,7 @@ export default function AdminProductsPage() {
       stock_quantity: 0,
       category_id: '',
       is_featured: false,
-      main_image_url: '',
-      gallery_images: ''
+      images: []
     })
   }
 
@@ -566,34 +567,13 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL de l'image principale
-                </label>
-                <input
-                  type="url"
-                  value={formData.main_image_url}
-                  onChange={(e) => setFormData({ ...formData, main_image_url: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Images de galerie (URLs séparées par des retours à la ligne)
-                </label>
-                <textarea
-                  value={formData.gallery_images}
-                  onChange={(e) => setFormData({ ...formData, gallery_images: e.target.value })}
-                  rows={3}
-                  placeholder="https://image1.jpg&#10;https://image2.jpg&#10;https://video.mp4"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Ajoutez des URLs d'images ou vidéos pour montrer différentes couleurs ou aspects du produit
-                </p>
-              </div>
+              {/* Upload d'images */}
+              <ImageUpload
+                images={formData.images}
+                onChange={(urls) => setFormData({ ...formData, images: urls })}
+                maxImages={5}
+                label="Images du produit (1-5 images)"
+              />
 
               <div className="flex items-center space-x-2">
                 <input
