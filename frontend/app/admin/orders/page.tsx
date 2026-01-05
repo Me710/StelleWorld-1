@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminPageWrapper from '@/components/AdminPageWrapper'
+import Toast, { getAuthHeaders } from '@/components/Toast'
 import { FiEye, FiEdit, FiRefreshCw, FiSearch, FiFilter, FiDownload } from 'react-icons/fi'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
@@ -59,6 +60,12 @@ export default function AdminOrdersPage() {
   const [showModal, setShowModal] = useState(false)
   const [newStatus, setNewStatus] = useState('')
   const [trackingNumber, setTrackingNumber] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type })
+  }
 
   useEffect(() => {
     loadOrders()
@@ -72,11 +79,16 @@ export default function AdminOrdersPage() {
       params.append('limit', limit.toString())
       if (statusFilter) params.append('status', statusFilter)
 
-      const { data } = await axios.get(`${API_URL}/orders/admin/all?${params.toString()}`)
+      const { data } = await axios.get(`${API_URL}/orders/admin/all?${params.toString()}`, {
+        headers: getAuthHeaders()
+      })
       setOrders(data.orders || [])
       setTotal(data.total || 0)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur chargement commandes:', error)
+      if (error.response?.status === 401) {
+        showToast('Session expirée. Veuillez vous reconnecter.', 'error')
+      }
       // Fallback avec données de démo si API non disponible
       setOrders([
         { id: 1, order_number: 'WA-20251217-A1B2', user_name: 'Marie Dupont', user_email: 'marie@example.com', status: 'pending', payment_status: 'pending', total_amount: 329.98, total_items: 2, created_at: new Date().toISOString(), shipping_city: 'Montréal' },
@@ -91,21 +103,28 @@ export default function AdminOrdersPage() {
   const handleUpdateStatus = async () => {
     if (!selectedOrder || !newStatus) return
 
+    setIsSubmitting(true)
+
     try {
       await axios.put(`${API_URL}/orders/${selectedOrder.id}/status`, null, {
         params: {
           status: newStatus,
           tracking_number: trackingNumber || undefined
-        }
+        },
+        headers: getAuthHeaders()
       })
+      showToast(`Commande ${selectedOrder.order_number} mise à jour !`, 'success')
       setShowModal(false)
       setSelectedOrder(null)
       setNewStatus('')
       setTrackingNumber('')
       loadOrders()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur mise à jour statut:', error)
-      alert('Erreur lors de la mise à jour du statut')
+      const message = error.response?.data?.detail || 'Erreur lors de la mise à jour du statut'
+      showToast(message, 'error')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -137,6 +156,14 @@ export default function AdminOrdersPage() {
 
   return (
     <AdminPageWrapper>
+      {/* Toast notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
@@ -339,15 +366,24 @@ export default function AdminOrdersPage() {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                disabled={isSubmitting}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
               >
                 Annuler
               </button>
               <button
                 onClick={handleUpdateStatus}
-                className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors"
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
               >
-                Enregistrer
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                    <span>Enregistrement...</span>
+                  </>
+                ) : (
+                  'Enregistrer'
+                )}
               </button>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminPageWrapper from '@/components/AdminPageWrapper'
+import Toast, { getAuthHeaders } from '@/components/Toast'
 import { FiPlus, FiEdit, FiTrash2, FiRefreshCw, FiGrid, FiPackage, FiImage } from 'react-icons/fi'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
@@ -23,6 +24,12 @@ export default function AdminCategoriesPage() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type })
+  }
 
   const [formData, setFormData] = useState({
     name: '',
@@ -38,13 +45,20 @@ export default function AdminCategoriesPage() {
   const loadCategories = async () => {
     setLoading(true)
     try {
-      const { data } = await axios.get(`${API_URL}/admin/categories`)
+      const { data } = await axios.get(`${API_URL}/admin/categories`, {
+        headers: getAuthHeaders()
+      })
       setCategories(data.categories || [])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur chargement catégories:', error)
+      if (error.response?.status === 401) {
+        showToast('Session expirée. Veuillez vous reconnecter.', 'error')
+      }
       // Fallback vers l'API publique
       try {
-        const { data } = await axios.get(`${API_URL}/products/categories`)
+        const { data } = await axios.get(`${API_URL}/products/categories`, {
+          headers: getAuthHeaders()
+        })
         setCategories(data.categories || [])
       } catch {
         setCategories([])
@@ -57,17 +71,29 @@ export default function AdminCategoriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validation côté client
+    if (!formData.name.trim()) {
+      showToast('Le nom de la catégorie est obligatoire', 'error')
+      return
+    }
+
+    setIsSubmitting(true)
+
     try {
       const params = new URLSearchParams()
-      params.append('name', formData.name)
+      params.append('name', formData.name.trim())
       if (formData.description) params.append('description', formData.description)
       if (formData.image_url) params.append('image_url', formData.image_url)
       params.append('sort_order', formData.sort_order.toString())
 
+      const headers = getAuthHeaders()
+
       if (editingCategory) {
-        await axios.put(`${API_URL}/admin/categories/${editingCategory.id}?${params.toString()}`)
+        await axios.put(`${API_URL}/admin/categories/${editingCategory.id}?${params.toString()}`, null, { headers })
+        showToast(`Catégorie "${formData.name}" mise à jour avec succès !`, 'success')
       } else {
-        await axios.post(`${API_URL}/admin/categories?${params.toString()}`)
+        await axios.post(`${API_URL}/admin/categories?${params.toString()}`, null, { headers })
+        showToast(`Catégorie "${formData.name}" créée avec succès !`, 'success')
       }
 
       setShowModal(false)
@@ -76,7 +102,13 @@ export default function AdminCategoriesPage() {
     } catch (error: any) {
       console.error('Erreur:', error)
       const message = error.response?.data?.detail || 'Erreur lors de l\'enregistrement'
-      alert(message)
+      if (error.response?.status === 401) {
+        showToast('Session expirée. Veuillez vous reconnecter.', 'error')
+      } else {
+        showToast(message, 'error')
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -91,15 +123,19 @@ export default function AdminCategoriesPage() {
     setShowModal(true)
   }
 
-  const handleDelete = async (categoryId: number) => {
+  const handleDelete = async (categoryId: number, categoryName: string) => {
     if (!confirm('Voulez-vous vraiment supprimer cette catégorie ?')) return
 
     try {
-      await axios.delete(`${API_URL}/admin/categories/${categoryId}`)
+      await axios.delete(`${API_URL}/admin/categories/${categoryId}`, {
+        headers: getAuthHeaders()
+      })
+      showToast(`Catégorie "${categoryName}" supprimée avec succès !`, 'success')
       loadCategories()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur:', error)
-      alert('Erreur lors de la suppression')
+      const message = error.response?.data?.detail || 'Erreur lors de la suppression'
+      showToast(message, 'error')
     }
   }
 
@@ -115,6 +151,14 @@ export default function AdminCategoriesPage() {
 
   return (
     <AdminPageWrapper>
+      {/* Toast notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
@@ -244,7 +288,7 @@ export default function AdminCategoriesPage() {
                           <FiEdit className="w-5 h-5" />
                         </button>
                         <button
-                          onClick={() => handleDelete(category.id)}
+                          onClick={() => handleDelete(category.id, category.name)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Supprimer"
                         >
@@ -327,15 +371,24 @@ export default function AdminCategoriesPage() {
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
-                  {editingCategory ? 'Enregistrer' : 'Créer'}
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                      <span>Enregistrement...</span>
+                    </>
+                  ) : (
+                    editingCategory ? 'Enregistrer' : 'Créer'
+                  )}
                 </button>
               </div>
             </form>

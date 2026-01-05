@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { FiPlus, FiEdit, FiTrash2, FiRefreshCw, FiSearch, FiStar, FiPackage } from 'react-icons/fi'
 import axios from 'axios'
 import AdminPageWrapper from '@/components/AdminPageWrapper'
+import Toast, { getAuthHeaders } from '@/components/Toast'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
 
@@ -40,6 +41,8 @@ export default function AdminProductsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -55,6 +58,10 @@ export default function AdminProductsPage() {
     gallery_images: ''
   })
 
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type })
+  }
+
   useEffect(() => {
     loadProducts()
     loadCategories()
@@ -63,11 +70,17 @@ export default function AdminProductsPage() {
   const loadProducts = async () => {
     setLoading(true)
     try {
-      const { data } = await axios.get(`${API_URL}/products/`, { params: { limit: 100 } })
+      const { data } = await axios.get(`${API_URL}/products/`, {
+        params: { limit: 100 },
+        headers: getAuthHeaders()
+      })
       setProducts(data.products || [])
       setTotal(data.total || 0)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur chargement produits:', error)
+      if (error.response?.status === 401) {
+        showToast('Session expirée. Veuillez vous reconnecter.', 'error')
+      }
       setProducts([])
     } finally {
       setLoading(false)
@@ -76,7 +89,9 @@ export default function AdminProductsPage() {
 
   const loadCategories = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/products/categories`)
+      const { data } = await axios.get(`${API_URL}/products/categories`, {
+        headers: getAuthHeaders()
+      })
       setCategories(data.categories || [])
     } catch (error) {
       console.error('Erreur chargement catégories:', error)
@@ -86,9 +101,21 @@ export default function AdminProductsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validation côté client
+    if (!formData.name.trim()) {
+      showToast('Le nom du produit est obligatoire', 'error')
+      return
+    }
+    if (formData.price <= 0) {
+      showToast('Le prix doit être supérieur à 0', 'error')
+      return
+    }
+
+    setIsSubmitting(true)
+
     try {
       const params = new URLSearchParams()
-      params.append('name', formData.name)
+      params.append('name', formData.name.trim())
       if (formData.description) params.append('description', formData.description)
       if (formData.short_description) params.append('short_description', formData.short_description)
       params.append('price', formData.price.toString())
@@ -97,7 +124,7 @@ export default function AdminProductsPage() {
       params.append('is_featured', formData.is_featured.toString())
       if (formData.main_image_url) params.append('main_image_url', formData.main_image_url)
       if (formData.compare_at_price) params.append('compare_at_price', formData.compare_at_price)
-      
+
       // Convertir les URLs de galerie en JSON
       if (formData.gallery_images.trim()) {
         const urls = formData.gallery_images
@@ -107,20 +134,33 @@ export default function AdminProductsPage() {
         params.append('gallery_images', JSON.stringify(urls))
       }
 
+      const headers = getAuthHeaders()
+
       if (editingProduct) {
         // Update
-        await axios.put(`${API_URL}/products/${editingProduct.id}?${params.toString()}`)
+        await axios.put(`${API_URL}/products/${editingProduct.id}?${params.toString()}`, null, { headers })
+        showToast(`Produit "${formData.name}" mis à jour avec succès !`, 'success')
       } else {
         // Create
-        await axios.post(`${API_URL}/products/?${params.toString()}`)
+        await axios.post(`${API_URL}/products/?${params.toString()}`, null, { headers })
+        showToast(`Produit "${formData.name}" créé avec succès !`, 'success')
       }
 
       setShowModal(false)
       resetForm()
       loadProducts()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur:', error)
-      alert('Erreur lors de l\'enregistrement. Vérifiez que vous êtes connecté en tant qu\'admin.')
+      const errorMessage = error.response?.data?.detail || error.response?.statusText || 'Erreur inconnue'
+      if (error.response?.status === 401) {
+        showToast('Session expirée. Veuillez vous reconnecter.', 'error')
+      } else if (error.response?.status === 403) {
+        showToast('Accès refusé. Vous devez être administrateur.', 'error')
+      } else {
+        showToast(`Erreur: ${errorMessage}`, 'error')
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -153,24 +193,33 @@ export default function AdminProductsPage() {
     setShowModal(true)
   }
 
-  const handleDelete = async (productId: number) => {
+  const handleDelete = async (productId: number, productName: string) => {
     if (!confirm('Voulez-vous vraiment désactiver ce produit ?')) return
 
     try {
-      await axios.put(`${API_URL}/products/${productId}?is_active=false`)
+      await axios.put(`${API_URL}/products/${productId}?is_active=false`, null, {
+        headers: getAuthHeaders()
+      })
+      showToast(`Produit "${productName}" désactivé`, 'success')
       loadProducts()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur:', error)
-      alert('Erreur lors de la suppression')
+      const errorMessage = error.response?.data?.detail || 'Erreur lors de la suppression'
+      showToast(errorMessage, 'error')
     }
   }
 
   const handleToggleFeatured = async (product: Product) => {
     try {
-      await axios.put(`${API_URL}/products/${product.id}?is_featured=${!product.is_featured}`)
+      await axios.put(`${API_URL}/products/${product.id}?is_featured=${!product.is_featured}`, null, {
+        headers: getAuthHeaders()
+      })
+      const action = !product.is_featured ? 'mis en vedette' : 'retiré des vedettes'
+      showToast(`Produit "${product.name}" ${action}`, 'success')
       loadProducts()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur:', error)
+      showToast('Erreur lors de la mise à jour', 'error')
     }
   }
 
@@ -197,6 +246,14 @@ export default function AdminProductsPage() {
 
   return (
     <AdminPageWrapper>
+      {/* Toast notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
@@ -347,10 +404,10 @@ export default function AdminProductsPage() {
                         <td className="px-6 py-4">
                           {product.stock_quantity !== null ? (
                             <span className={`px-2 py-1 rounded text-sm font-medium ${product.stock_quantity < 10
-                                ? 'bg-red-100 text-red-800'
-                                : product.stock_quantity < 30
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-green-100 text-green-800'
+                              ? 'bg-red-100 text-red-800'
+                              : product.stock_quantity < 30
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-green-100 text-green-800'
                               }`}>
                               {product.stock_quantity} unités
                             </span>
@@ -366,8 +423,8 @@ export default function AdminProductsPage() {
                             <button
                               onClick={() => handleToggleFeatured(product)}
                               className={`p-2 rounded-lg transition-colors ${product.is_featured
-                                  ? 'text-yellow-600 hover:bg-yellow-50'
-                                  : 'text-gray-400 hover:bg-gray-50'
+                                ? 'text-yellow-600 hover:bg-yellow-50'
+                                : 'text-gray-400 hover:bg-gray-50'
                                 }`}
                               title={product.is_featured ? 'Retirer des vedettes' : 'Mettre en vedette'}
                             >
@@ -381,7 +438,7 @@ export default function AdminProductsPage() {
                               <FiEdit className="w-5 h-5" />
                             </button>
                             <button
-                              onClick={() => handleDelete(product.id)}
+                              onClick={() => handleDelete(product.id, product.name)}
                               className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Supprimer"
                             >
@@ -555,15 +612,24 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
-                  {editingProduct ? 'Enregistrer' : 'Créer le produit'}
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                      <span>Enregistrement...</span>
+                    </>
+                  ) : (
+                    editingProduct ? 'Enregistrer' : 'Créer le produit'
+                  )}
                 </button>
               </div>
             </form>
