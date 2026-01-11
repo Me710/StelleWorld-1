@@ -4,9 +4,22 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminPageWrapper from '@/components/AdminPageWrapper'
 import Toast, { getAuthHeaders } from '@/components/Toast'
+import ImageUpload from '@/components/ImageUpload'
 import { FiPlus, FiEdit, FiTrash2, FiRefreshCw, FiGrid, FiPackage, FiImage } from 'react-icons/fi'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
+const BACKEND_URL = API_URL.replace('/api', '')
+
+// Helper pour construire l'URL complète d'une image
+const getImageUrl = (url: string | null): string | null => {
+  if (!url) return null
+  // Si c'est une URL locale (/api/uploads/...), la préfixer avec l'URL du backend
+  if (url.startsWith('/api')) {
+    return `${BACKEND_URL}${url}`
+  }
+  // Sinon (Cloudinary ou autre URL complète), la retourner telle quelle
+  return url
+}
 
 interface Category {
   id: number
@@ -34,7 +47,7 @@ export default function AdminCategoriesPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    image_url: '',
+    images: [] as string[], // Tableau d'images (on n'en utilisera qu'une seule)
     sort_order: 0
   })
 
@@ -83,7 +96,10 @@ export default function AdminCategoriesPage() {
       const params = new URLSearchParams()
       params.append('name', formData.name.trim())
       if (formData.description) params.append('description', formData.description)
-      if (formData.image_url) params.append('image_url', formData.image_url)
+      // Utiliser la première image du tableau (s'il y en a une)
+      if (formData.images.length > 0) {
+        params.append('image_url', formData.images[0])
+      }
       params.append('sort_order', formData.sort_order.toString())
 
       const headers = getAuthHeaders()
@@ -117,7 +133,8 @@ export default function AdminCategoriesPage() {
     setFormData({
       name: category.name,
       description: category.description || '',
-      image_url: category.image_url || '',
+      // Convertir l'URL existante en tableau pour le composant ImageUpload
+      images: category.image_url ? [category.image_url] : [],
       sort_order: category.sort_order || 0
     })
     setShowModal(true)
@@ -144,7 +161,7 @@ export default function AdminCategoriesPage() {
     setFormData({
       name: '',
       description: '',
-      image_url: '',
+      images: [],
       sort_order: 0
     })
   }
@@ -252,7 +269,7 @@ export default function AdminCategoriesPage() {
                     <div className="h-40 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                       {category.image_url ? (
                         <img
-                          src={category.image_url}
+                          src={getImageUrl(category.image_url) || ''}
                           alt={category.name}
                           className="w-full h-full object-cover"
                         />
@@ -340,18 +357,13 @@ export default function AdminCategoriesPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL de l'image
-                </label>
-                <input
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-                  placeholder="https://..."
-                />
-              </div>
+              {/* Upload d'image */}
+              <ImageUpload
+                images={formData.images}
+                onChange={(urls) => setFormData({ ...formData, images: urls })}
+                maxImages={1}
+                label="Image de la catégorie"
+              />
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

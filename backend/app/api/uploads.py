@@ -25,6 +25,10 @@ PRODUCTS_UPLOAD_DIR = os.path.join(UPLOAD_DIR, "products")
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
+# Créer les dossiers d'upload au démarrage
+os.makedirs(PRODUCTS_UPLOAD_DIR, exist_ok=True)
+print(f"📁 Dossier uploads créé/vérifié: {PRODUCTS_UPLOAD_DIR}")
+
 # Configuration Cloudinary
 cloudinary_configured = False
 try:

@@ -56,6 +56,7 @@ static/uploads/
 
 # Node.js (si utilisé pour le frontend)
 node_modules/
+.next/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

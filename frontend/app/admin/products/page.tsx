@@ -9,6 +9,18 @@ import Toast, { getAuthHeaders } from '@/components/Toast'
 import ImageUpload from '@/components/ImageUpload'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
+const BACKEND_URL = API_URL.replace('/api', '')
+
+// Helper pour construire l'URL complète d'une image
+const getImageUrl = (url: string | null): string | null => {
+  if (!url) return null
+  // Si c'est une URL locale (/api/uploads/...), la préfixer avec l'URL du backend
+  if (url.startsWith('/api')) {
+    return `${BACKEND_URL}${url}`
+  }
+  // Sinon (Cloudinary ou autre URL complète), la retourner telle quelle
+  return url
+}
 
 interface Category {
   id: number
@@ -34,6 +46,8 @@ interface Product {
   view_count: number
 }
 
+type DeleteMode = 'soft' | 'hard'
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -44,6 +58,7 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
 
   // Form state
   const [formData, setFormData] = useState({
@@ -71,11 +86,12 @@ export default function AdminProductsPage() {
     setLoading(true)
     try {
       const { data } = await axios.get(`${API_URL}/products/`, {
-        params: { limit: 100 },
+        params: { limit: 100, include_inactive: true },
         headers: getAuthHeaders()
       })
       setProducts(data.products || [])
       setTotal(data.total || 0)
+      setImageErrors(new Set()) // Réinitialiser les erreurs d'image
     } catch (error: any) {
       console.error('Erreur chargement produits:', error)
       if (error.response?.status === 401) {
@@ -195,19 +211,37 @@ export default function AdminProductsPage() {
     setShowModal(true)
   }
 
-  const handleDelete = async (productId: number, productName: string) => {
-    if (!confirm('Voulez-vous vraiment désactiver ce produit ?')) return
+  const handleDelete = async (productId: number, productName: string, forceDelete: boolean = false) => {
+    const message = forceDelete
+      ? 'Voulez-vous vraiment SUPPRIMER DÉFINITIVEMENT ce produit ? Cette action est irréversible et supprimera toutes les données associées.'
+      : 'Voulez-vous désactiver ce produit ? Il ne sera plus visible pour les clients mais restera dans la base de données.'
+
+    if (!confirm(message)) return
 
     try {
-      await axios.put(`${API_URL}/products/${productId}?is_active=false`, null, {
+      await axios.delete(`${API_URL}/products/${productId}?force=${forceDelete}`, {
         headers: getAuthHeaders()
       })
-      showToast(`Produit "${productName}" désactivé`, 'success')
+      const action = forceDelete ? 'supprimé définitivement' : 'désactivé'
+      showToast(`Produit "${productName}" ${action}`, 'success')
       loadProducts()
     } catch (error: any) {
       console.error('Erreur:', error)
       const errorMessage = error.response?.data?.detail || 'Erreur lors de la suppression'
       showToast(errorMessage, 'error')
+    }
+  }
+
+  const handleReactivate = async (product: Product) => {
+    try {
+      await axios.put(`${API_URL}/products/${product.id}?is_active=true`, null, {
+        headers: getAuthHeaders()
+      })
+      showToast(`Produit "${product.name}" réactivé`, 'success')
+      loadProducts()
+    } catch (error: any) {
+      console.error('Erreur:', error)
+      showToast('Erreur lors de la réactivation', 'error')
     }
   }
 
@@ -361,12 +395,16 @@ export default function AdminProductsPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-3">
                             <div className="relative h-12 w-12 flex-shrink-0">
-                              {product.main_image_url ? (
+                              {product.main_image_url && !imageErrors.has(product.id) ? (
                                 <Image
-                                  src={product.main_image_url}
+                                  src={getImageUrl(product.main_image_url) || ''}
                                   alt={product.name}
                                   fill
                                   className="object-cover rounded"
+                                  unoptimized={product.main_image_url.startsWith('/api')}
+                                  onError={() => {
+                                    setImageErrors(prev => new Set(prev).add(product.id))
+                                  }}
                                 />
                               ) : (
                                 <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center">
@@ -439,7 +477,7 @@ export default function AdminProductsPage() {
                               <FiEdit className="w-5 h-5" />
                             </button>
                             <button
-                              onClick={() => handleDelete(product.id, product.name)}
+                              onClick={() => handleDelete(product.id, product.name, true)}
                               className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Supprimer"
                             >

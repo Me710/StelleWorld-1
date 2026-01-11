@@ -58,13 +58,18 @@ async def get_products(
     featured_only: bool = False,
     in_stock_only: bool = False,
     on_promo: bool = False,
+    include_inactive: bool = False,
     sort_by: str = Query("created_at", regex="^(created_at|name|price|sales_count)$"),
     sort_order: str = Query("desc", regex="^(asc|desc)$"),
     db: Session = Depends(get_db)
 ) -> Any:
     """Obtenir la liste des produits avec filtres"""
     
-    query = db.query(Product).filter(Product.is_active == True)
+    query = db.query(Product)
+    
+    # Par défaut, n'afficher que les produits actifs (sauf si include_inactive=True pour l'admin)
+    if not include_inactive:
+        query = query.filter(Product.is_active == True)
     
     # Filtres
     if category_id:
@@ -120,7 +125,9 @@ async def get_products(
                 "compare_at_price": product.compare_at_price,
                 "discount_percentage": product.discount_percentage,
                 "main_image_url": product.main_image_url,
+                "gallery_images": product.gallery_images,
                 "is_in_stock": product.is_in_stock,
+                "is_active": product.is_active,
                 "stock_quantity": product.stock_quantity if product.track_inventory else None,
                 "is_featured": product.is_featured,
                 "category": {
@@ -380,3 +387,51 @@ async def update_product(
     db.commit()
     
     return {"message": "Produit mis à jour avec succès"}
+
+
+@router.delete("/{product_id}", dependencies=[Depends(get_current_admin_user)])
+async def delete_product(
+    product_id: int,
+    force: bool = False,
+    db: Session = Depends(get_db)
+) -> Any:
+    """
+    Supprimer un produit (Admin)
+    
+    - Par défaut, effectue un soft delete (is_active = False)
+    - Si force=True, tente une suppression définitive (peut échouer si le produit est lié à des commandes)
+    """
+    
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Produit non trouvé")
+    
+    if force:
+        # Vérifier si le produit est lié à des commandes ou abonnements
+        from app.models.order import OrderItem
+        from app.models.subscription import SubscriptionItem
+        
+        order_items_count = db.query(OrderItem).filter(OrderItem.product_id == product_id).count()
+        subscription_items_count = db.query(SubscriptionItem).filter(SubscriptionItem.product_id == product_id).count()
+        
+        if order_items_count > 0 or subscription_items_count > 0:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Impossible de supprimer définitivement ce produit car il est lié à {order_items_count} commande(s) et {subscription_items_count} abonnement(s). Utilisez la désactivation à la place."
+            )
+        
+        try:
+            db.delete(product)
+            db.commit()
+            return {"message": "Produit supprimé définitivement", "deleted": True}
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(
+                status_code=400,
+                detail=f"Erreur lors de la suppression: {str(e)}. Le produit a été désactivé à la place."
+            )
+    else:
+        # Soft delete - désactiver le produit
+        product.is_active = False
+        db.commit()
+        return {"message": "Produit désactivé avec succès", "deleted": False, "deactivated": True}
