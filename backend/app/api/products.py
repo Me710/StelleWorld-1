@@ -47,6 +47,34 @@ async def get_categories(
     }
 
 
+@router.get("/categories/{slug}")
+async def get_category_by_slug(
+    slug: str,
+    db: Session = Depends(get_db)
+) -> Any:
+    """Obtenir une catégorie par son slug"""
+    
+    category = (
+        db.query(Category)
+        .filter(Category.slug == slug, Category.is_active == True)
+        .first()
+    )
+    
+    if not category:
+        raise HTTPException(status_code=404, detail="Catégorie non trouvée")
+    
+    return {
+        "id": category.id,
+        "name": category.name,
+        "description": category.description,
+        "slug": category.slug,
+        "image_url": category.image_url,
+        "icon": category.icon,
+        "color": category.color,
+        "product_count": len([p for p in category.products if p.is_active])
+    }
+
+
 @router.get("/")
 async def get_products(
     skip: int = Query(0, ge=0),

@@ -5,22 +5,21 @@ import { useParams } from 'next/navigation'
 import ProductCard from '@/components/ProductCard'
 import { getProducts, getCategory } from '@/lib/api'
 
-const categoryInfo: any = {
-  'meches': {
-    name: 'Mèches',
-    description: 'Découvrez notre collection de mèches premium pour tous les styles',
-    banner: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=1920&h=400&fit=crop',
-  },
-  'skin-care': {
-    name: 'Skin Care',
-    description: 'Produits de soins professionnels pour une peau éclatante',
-    banner: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1920&h=400&fit=crop',
-  },
-  'rendez-vous': {
-    name: 'Rendez-vous',
-    description: 'Réservez votre consultation avec nos experts beauté',
-    banner: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&h=400&fit=crop',
-  },
+// Fallback images for categories without custom images
+const defaultBanners: Record<string, string> = {
+  'meches': 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=1920&h=400&fit=crop',
+  'skin-care': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1920&h=400&fit=crop',
+  'rendez-vous': 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&h=400&fit=crop',
+}
+
+const defaultBanner = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&h=400&fit=crop'
+
+interface CategoryData {
+  id: number
+  name: string
+  description: string | null
+  slug: string
+  image_url: string | null
 }
 
 export default function CategoryPage() {
@@ -29,17 +28,23 @@ export default function CategoryPage() {
   
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const category = categoryInfo[slug] || { name: slug, description: '', banner: '' }
+  const [category, setCategory] = useState<CategoryData | null>(null)
 
   useEffect(() => {
-    loadProducts()
+    loadCategoryAndProducts()
   }, [slug])
 
-  const loadProducts = async () => {
+  const loadCategoryAndProducts = async () => {
     setLoading(true)
     try {
-      const data = await getProducts({ category: slug })
-      setProducts(data.products || [])
+      // Charger la catégorie et les produits en parallèle
+      const [categoryData, productsData] = await Promise.all([
+        getCategory(slug).catch(() => null),
+        getProducts({ category: slug })
+      ])
+      
+      setCategory(categoryData)
+      setProducts(productsData.products || [])
     } catch (error) {
       console.error('Erreur:', error)
     } finally {
@@ -47,22 +52,34 @@ export default function CategoryPage() {
     }
   }
 
+  // Déterminer l'image de bannière (priorité: image API > fallback par slug > image par défaut)
+  const getBannerImage = () => {
+    if (category?.image_url) return category.image_url
+    if (defaultBanners[slug]) return defaultBanners[slug]
+    return defaultBanner
+  }
+  
+  const categoryName = category?.name || slug
+  const categoryDescription = category?.description || ''
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Banner */}
       <div
         className="relative h-64 bg-cover bg-center"
-        style={{ backgroundImage: `url(${category.banner})` }}
+        style={{ backgroundImage: `url(${getBannerImage()})` }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
         <div className="relative z-10 h-full flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {category.name}
+              {categoryName}
             </h1>
-            <p className="text-xl text-gray-200">
-              {category.description}
-            </p>
+            {categoryDescription && (
+              <p className="text-xl text-gray-200">
+                {categoryDescription}
+              </p>
+            )}
           </div>
         </div>
       </div>
